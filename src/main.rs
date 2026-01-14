@@ -1,26 +1,27 @@
 use actix_web::{get, App, HttpServer, Responder};
-use dotenvy::dotenv;
-
-mod db; // 👈 nuevo
+use std::env;
 
 #[get("/")]
 async fn hello() -> impl Responder {
-    "Hola desde Actix Web"
+    "Hola desde Actix Web 🚀"
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok(); // 👈 carga .env
+    dotenvy::dotenv().ok(); // local ok, en Railway no estorba
 
-    let pool = db::connect_db().await;
-    println!("✅ Conectado a SQL Server");
+    let port: u16 = env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse()
+        .expect("PORT debe ser un número");
 
-    HttpServer::new(move || {
+    println!("🚀 Escuchando en 0.0.0.0:{port}");
+
+    HttpServer::new(|| {
         App::new()
-            .app_data(actix_web::web::Data::new(pool.clone())) // 👈 inyecta pool
             .service(hello)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", port))?
     .run()
     .await
 }
