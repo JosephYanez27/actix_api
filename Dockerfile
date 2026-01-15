@@ -1,20 +1,26 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
+# ---------- build ----------
+FROM rust:1.75 as builder
+
 WORKDIR /app
 
-FROM chef AS planner
-COPY . .
-RUN cargo chef prepare --recipe-path recipe.json
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+RUN cargo build --release
+RUN rm -rf src
 
-FROM chef AS builder
-COPY --from=planner /app/recipe.json recipe.json
-# Build dependencies - this is the caching Docker layer!
-RUN cargo chef cook --release --recipe-path recipe.json
-# Build application
 COPY . .
-RUN cargo build --release --bin actix_api
+RUN cargo build --release
 
-# We do not need the Rust toolchain to run the binary!
-FROM debian:bookworm-slim AS runtime
+# ---------- runtime ----------
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-COPY --from=builder /app/target/release/actix_api /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/actix_api"]
+
+COPY --from=builder /app/target/release/actix_api /usr/local/bin/actix_api
+COPY --from=builder /app/static ./static
+
+EXPOSE 8080
+
+CMD ["actix_api"]
