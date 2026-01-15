@@ -1,11 +1,13 @@
-use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
+use sqlx::{PgPool, postgres::PgPoolOptions};
+use std::env;
 
-pub type DbPool = Pool<Postgres>;
+pub async fn connect_db() -> PgPool {
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL no definida");
 
-pub async fn connect_db() -> DbPool {
     PgPoolOptions::new()
         .max_connections(5)
-        .connect(&std::env::var("DATABASE_URL").unwrap())
+        .connect(&database_url)
         .await
-        .expect("❌ Error conectando a PostgreSQL")
+        .expect("Error conectando a la DB")
 }

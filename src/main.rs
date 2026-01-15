@@ -1,25 +1,66 @@
-use actix_web::{get, App, HttpServer, Responder};
+use actix_files::Files;
+use actix_web::{post, web, App, HttpResponse, HttpServer};
+use serde::Deserialize;
 use std::env;
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    "Hola desde Actix Web 🚀"
+#[derive(Deserialize)]
+struct CaptchaRequest {
+    token: String,
+}
+
+#[post("/captcha/verify")]
+async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
+    let secret = match env::var("RECAPTCHA_SECRET") {
+        Ok(v) => v,
+        Err(_) => {
+            return HttpResponse::InternalServerError()
+                .json("RECAPTCHA_SECRET no definida");
+        }
+    };
+
+    let client = reqwest::Client::new();
+
+    let res = client
+        .post("https://www.google.com/recaptcha/api/siteverify")
+        .form(&[
+            ("secret", secret),
+            ("response", body.token.clone()),
+        ])
+        .send()
+        .await;
+
+    match res {
+        Ok(resp) => {
+            let json: serde_json::Value = resp.json().await.unwrap();
+
+            if json["success"].as_bool().unwrap_or(false) {
+                HttpResponse::Ok().json("Captcha válido")
+            } else {
+                HttpResponse::Unauthorized().json("Captcha inválido")
+            }
+        }
+        Err(_) => HttpResponse::InternalServerError().json("Error verificando captcha"),
+    }
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenvy::dotenv().ok(); // local ok, en Railway no estorba
+    dotenvy::dotenv().ok();
 
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
-        .expect("PORT debe ser un número");
+        .expect("PORT inválido");
 
-    println!("🚀 Escuchando en 0.0.0.0:{port}");
+    println!("🚀 Servidor en http://0.0.0.0:{port}");
 
     HttpServer::new(|| {
         App::new()
-            .service(hello)
+            .service(verify_captcha)
+            .service(
+                Files::new("/", "./static")
+                    .index_file("index.html"),
+            )
     })
     .bind(("0.0.0.0", port))?
     .run()
