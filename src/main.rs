@@ -1,11 +1,16 @@
 use actix_files::Files;
-use actix_web::{post, web, App, HttpResponse, HttpServer};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use serde::Deserialize;
 use std::env;
 
 #[derive(Deserialize)]
 struct CaptchaRequest {
     token: String,
+}
+
+#[get("/health")]
+async fn health() -> HttpResponse {
+    HttpResponse::Ok().body("OK")
 }
 
 #[post("/captcha/verify")]
@@ -45,6 +50,7 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Carga variables de entorno (.env en local, Railway en prod)
     dotenvy::dotenv().ok();
 
     let port: u16 = env::var("PORT")
@@ -52,15 +58,19 @@ async fn main() -> std::io::Result<()> {
         .parse()
         .expect("PORT inválido");
 
-    println!("🚀 Servidor en http://0.0.0.0:{port}");
+    println!("🚀 Servidor corriendo en 0.0.0.0:{port}");
 
     HttpServer::new(|| {
         App::new()
-            .service(verify_captcha)
+            // Archivos estáticos (IMPORTANTE que vaya primero)
             .service(
                 Files::new("/", "./static")
                     .index_file("index.html"),
             )
+            // Health check para Railway
+            .service(health)
+            // API
+            .service(verify_captcha)
     })
     .bind(("0.0.0.0", port))?
     .run()
