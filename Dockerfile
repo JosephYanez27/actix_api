@@ -1,5 +1,6 @@
 # ---------- build ----------
-FROM rust:1.78 as builder
+FROM rust:latest as builder
+
 
 
 WORKDIR /app
