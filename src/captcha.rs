@@ -1,22 +1,27 @@
-use actix_web::{post, web, HttpResponse};
+use actix_files::Files;
+use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use serde::Deserialize;
 use std::env;
 
 #[derive(Deserialize)]
-pub struct RecaptchaResponse {
-    pub success: bool,
-    pub score: Option<f32>,
+struct CaptchaRequest {
+    token: String,
+}
+
+#[get("/health")]
+async fn health() -> HttpResponse {
+    HttpResponse::Ok().body("OK")
 }
 
 #[post("/captcha/verify")]
-pub async fn verify_captcha(
-    body: web::Json<serde_json::Value>
-) -> HttpResponse {
-
-    let token = body["token"].as_str().unwrap_or("");
-
-    let secret = env::var("RECAPTCHA_SECRET")
-        .expect("RECAPTCHA_SECRET no definida");
+async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
+    let secret = match env::var("RECAPTCHA_SECRET") {
+        Ok(v) => v,
+        Err(_) => {
+            return HttpResponse::InternalServerError()
+                .body("RECAPTCHA_SECRET no definida");
+        }
+    };
 
     let client = reqwest::Client::new();
 
@@ -24,18 +29,47 @@ pub async fn verify_captcha(
         .post("https://www.google.com/recaptcha/api/siteverify")
         .form(&[
             ("secret", secret),
-            ("response", token.to_string()),
+            ("response", body.token.clone()),
         ])
         .send()
         .await;
 
-    if let Ok(resp) = res {
-        let json: RecaptchaResponse = resp.json().await.unwrap();
+    match res {
+        Ok(resp) => {
+            let json: serde_json::Value = resp.json().await.unwrap();
 
-        if json.success {
-            return HttpResponse::Ok().json("Captcha válido");
+            if json["success"].as_bool().unwrap_or(false) {
+                HttpResponse::Ok().body("Captcha válido")
+            } else {
+                HttpResponse::Unauthorized().body("Captcha inválido")
+            }
         }
+        Err(_) => HttpResponse::InternalServerError().body("Error verificando captcha"),
     }
+}
 
-    HttpResponse::Unauthorized().json("Captcha inválido")
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    dotenvy::dotenv().ok();
+
+    let port: u16 = env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse()
+        .expect("PORT inválido");
+
+    println!("🚀 Servidor corriendo en 0.0.0.0:{port}");
+
+    HttpServer::new(|| {
+        App::new()
+            .service(health)
+            .service(verify_captcha)
+            // Sirve TODO lo que esté en /static
+            .service(
+                Files::new("/", "./static")
+                    .index_file("index.html"),
+            )
+    })
+    .bind(("0.0.0.0", port))?
+    .run()
+    .await
 }

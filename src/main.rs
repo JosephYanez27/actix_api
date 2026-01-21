@@ -1,16 +1,11 @@
-use actix_files::{Files, NamedFile};
+use actix_files::Files;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use serde::Deserialize;
-use std::{env, path::PathBuf};
+use std::env;
 
 #[derive(Deserialize)]
 struct CaptchaRequest {
     token: String,
-}
-
-#[get("/")]
-async fn index() -> actix_web::Result<NamedFile> {
-    Ok(NamedFile::open(PathBuf::from("./static/index.html"))?)
 }
 
 #[get("/health")]
@@ -25,7 +20,7 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
 
     let client = reqwest::Client::new();
 
-    let res = client
+    let resp = client
         .post("https://www.google.com/recaptcha/api/siteverify")
         .form(&[
             ("secret", secret),
@@ -34,33 +29,38 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
         .send()
         .await;
 
-    if let Ok(resp) = res {
-        let json: serde_json::Value = resp.json().await.unwrap();
-        if json["success"].as_bool().unwrap_or(false) {
-            return HttpResponse::Ok().json("Captcha válido");
+    match resp {
+        Ok(r) => {
+            let json: serde_json::Value = r.json().await.unwrap();
+            if json["success"].as_bool().unwrap_or(false) {
+                HttpResponse::Ok().json("Captcha válido")
+            } else {
+                HttpResponse::Unauthorized().json("Captcha inválido")
+            }
         }
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
-
-    HttpResponse::Unauthorized().json("Captcha inválido")
 }
 
-#[actix_web::main]
+#[actix_web::main]   // 👈 ESTE MACRO ES LA CLAVE
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
 
     let port: u16 = env::var("PORT")
-        .unwrap_or_else(|_| "8080".to_string())
+        .unwrap_or_else(|_| "8080".into())
         .parse()
         .expect("PORT inválido");
 
-    println!("🚀 Iniciando servidor en 0.0.0.0:{port}");
+    println!("🚀 Servidor en 0.0.0.0:{port}");
 
     HttpServer::new(|| {
         App::new()
-            .service(index)
             .service(health)
             .service(verify_captcha)
-            .service(Files::new("/static", "./static"))
+            .service(
+                Files::new("/", "./static")
+                    .index_file("index.html"),
+            )
     })
     .bind(("0.0.0.0", port))?
     .run()
