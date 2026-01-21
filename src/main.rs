@@ -4,7 +4,6 @@ use actix_files::Files;
 use actix_web::{get, App, HttpResponse, HttpServer};
 use std::env;
 
-// 👇 IMPORTANTE
 use crate::captcha::verify_captcha;
 
 #[get("/health")]
@@ -25,7 +24,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(health)
             .service(verify_captcha)
-            .service(Files::new("/", "./static").index_file("index.html"))
+            .service(
+                Files::new("/", "./static")
+                    .index_file("index.html")
+            )
     })
     .bind(("0.0.0.0", port))?
     .run()

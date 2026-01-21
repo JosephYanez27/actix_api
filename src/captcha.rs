@@ -13,7 +13,10 @@ pub async fn verify_captcha(
 ) -> HttpResponse {
     let secret = match env::var("RECAPTCHA_SECRET") {
         Ok(v) => v,
-        Err(_) => return HttpResponse::InternalServerError().body("Missing secret"),
+        Err(_) => {
+            return HttpResponse::InternalServerError()
+                .body("RECAPTCHA_SECRET no definida");
+        }
     };
 
     let client = reqwest::Client::new();
@@ -29,14 +32,22 @@ pub async fn verify_captcha(
 
     match res {
         Ok(resp) => {
-            let json: serde_json::Value = resp.json().await.unwrap();
+            let json: serde_json::Value = match resp.json().await {
+                Ok(j) => j,
+                Err(_) => {
+                    return HttpResponse::InternalServerError()
+                        .body("Respuesta inválida de Google");
+                }
+            };
 
             if json["success"].as_bool().unwrap_or(false) {
-                HttpResponse::Ok().json(true)
+                HttpResponse::Ok().body("Captcha válido")
             } else {
-                HttpResponse::Unauthorized().json(false)
+                // 👇 DEVOLVEMOS EL ERROR REAL
+                HttpResponse::Unauthorized().json(json)
             }
         }
-        Err(_) => HttpResponse::InternalServerError().body("Captcha verify failed"),
+        Err(_) => HttpResponse::InternalServerError()
+            .body("Error verificando captcha"),
     }
 }
