@@ -8,6 +8,13 @@ struct CaptchaRequest {
     token: String,
 }
 
+#[get("/")]
+async fn index() -> HttpResponse {
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(include_str!("../static/index.html"))
+}
+
 #[get("/health")]
 async fn health() -> HttpResponse {
     HttpResponse::Ok().body("OK")
@@ -15,13 +22,8 @@ async fn health() -> HttpResponse {
 
 #[post("/captcha/verify")]
 async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
-    let secret = match env::var("RECAPTCHA_SECRET") {
-        Ok(v) => v,
-        Err(_) => {
-            return HttpResponse::InternalServerError()
-                .json("RECAPTCHA_SECRET no definida");
-        }
-    };
+    let secret = env::var("RECAPTCHA_SECRET")
+        .expect("RECAPTCHA_SECRET no definida");
 
     let client = reqwest::Client::new();
 
@@ -34,18 +36,14 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
         .send()
         .await;
 
-    match res {
-        Ok(resp) => {
-            let json: serde_json::Value = resp.json().await.unwrap();
-
-            if json["success"].as_bool().unwrap_or(false) {
-                HttpResponse::Ok().json("Captcha válido")
-            } else {
-                HttpResponse::Unauthorized().json("Captcha inválido")
-            }
+    if let Ok(resp) = res {
+        let json: serde_json::Value = resp.json().await.unwrap();
+        if json["success"].as_bool().unwrap_or(false) {
+            return HttpResponse::Ok().json("Captcha válido");
         }
-        Err(_) => HttpResponse::InternalServerError().json("Error verificando captcha"),
     }
+
+    HttpResponse::Unauthorized().json("Captcha inválido")
 }
 
 #[actix_web::main]
@@ -57,14 +55,12 @@ async fn main() -> std::io::Result<()> {
         .parse()
         .expect("PORT inválido");
 
-    println!("🚀 Servidor corriendo en 0.0.0.0:{port}");
-
     HttpServer::new(|| {
         App::new()
+            .service(index)
             .service(health)
             .service(verify_captcha)
-          Files::new("/static", "./static")
-
+            .service(Files::new("/static", "./static"))
     })
     .bind(("0.0.0.0", port))?
     .run()
