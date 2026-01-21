@@ -1,35 +1,22 @@
-mod captcha;
-
-use actix_files::Files;
-use actix_web::{get, App, HttpResponse, HttpServer};
+use actix_web::{App, HttpServer, web};
+use sqlx::PgPool;
 use std::env;
 
-use crate::captcha::verify_captcha;
-
-#[get("/health")]
-async fn health() -> HttpResponse {
-    HttpResponse::Ok().body("OK")
-}
+mod captcha;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
 
-    let port: u16 = env::var("PORT")
-        .unwrap_or_else(|_| "8080".to_string())
-        .parse()
-        .expect("PORT inválido");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL missing");
+    let pool = PgPool::connect(&database_url).await.unwrap();
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
-            .service(health)
-            .service(verify_captcha)
-            .service(
-                Files::new("/", "./static")
-                    .index_file("index.html")
-            )
+            .app_data(web::Data::new(pool.clone()))
+            .service(captcha::verify_captcha)
     })
-    .bind(("0.0.0.0", port))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
