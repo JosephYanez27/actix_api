@@ -19,7 +19,10 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
         Ok(v) => v,
         Err(_) => {
             return HttpResponse::InternalServerError()
-                .body("RECAPTCHA_SECRET no definida");
+                .json(serde_json::json!({
+                    "ok": false,
+                    "error": "RECAPTCHA_SECRET no definida"
+                }));
         }
     };
 
@@ -34,20 +37,25 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
         .send()
         .await;
 
-   match res {
-    Ok(resp) => {
-        let json: serde_json::Value = resp.json().await.unwrap();
+    match res {
+        Ok(resp) => {
+            let json: serde_json::Value = resp.json().await.unwrap();
 
-        println!("🔎 RESPUESTA GOOGLE: {}", json);
-
-        if json["success"].as_bool().unwrap_or(false) {
-            HttpResponse::Ok().body("Captcha válido")
-        } else {
-            HttpResponse::Unauthorized().body(format!(
-                "Captcha inválido: {:?}",
-                json["error-codes"]
-            ))
+            if json["success"].as_bool().unwrap_or(false) {
+                HttpResponse::Ok().json(serde_json::json!({
+                    "ok": true
+                }))
+            } else {
+                HttpResponse::Unauthorized().json(serde_json::json!({
+                    "ok": false,
+                    "error": "Captcha inválido"
+                }))
+            }
         }
+        Err(_) => HttpResponse::InternalServerError().json(serde_json::json!({
+            "ok": false,
+            "error": "Error verificando captcha"
+        })),
     }
 }
 

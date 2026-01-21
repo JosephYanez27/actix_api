@@ -19,18 +19,15 @@ document.getElementById("myForm").addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data);
+    if (!data.ok) {
+      throw new Error(data.error);
     }
 
     document.getElementById("msg").innerText = "✅ Captcha válido";
-    console.log("Servidor:", data);
-
-    // Aquí iría tu lógica real (guardar, redirigir, etc)
+    grecaptcha.reset();
 
   } catch (err) {
     document.getElementById("msg").innerText = "❌ Captcha inválido";
     grecaptcha.reset();
-    console.error(err);
   }
 });
