@@ -63,7 +63,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(health)
             .service(verify_captcha)
-            .service(Files::new("/", "./static").index_file("index.html"))
+          Files::new("/static", "./static")
+
     })
     .bind(("0.0.0.0", port))?
     .run()
