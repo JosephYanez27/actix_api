@@ -50,7 +50,6 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // Carga variables de entorno (.env en local, Railway en prod)
     dotenvy::dotenv().ok();
 
     let port: u16 = env::var("PORT")
@@ -62,15 +61,9 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            // Archivos estáticos (IMPORTANTE que vaya primero)
-            .service(
-                Files::new("/", "./static")
-                    .index_file("index.html"),
-            )
-            // Health check para Railway
             .service(health)
-            // API
             .service(verify_captcha)
+            .service(Files::new("/", "./static").index_file("index.html"))
     })
     .bind(("0.0.0.0", port))?
     .run()
