@@ -2,6 +2,8 @@ document.getElementById("myForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const token = grecaptcha.getResponse();
+ 
+console.log("TOKEN:", token);
 
   if (!token) {
     document.getElementById("msg").innerText = "❌ Completa el captcha";
