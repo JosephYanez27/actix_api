@@ -34,17 +34,20 @@ async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
         .send()
         .await;
 
-    match res {
-        Ok(resp) => {
-            let json: serde_json::Value = resp.json().await.unwrap();
+   match res {
+    Ok(resp) => {
+        let json: serde_json::Value = resp.json().await.unwrap();
 
-            if json["success"].as_bool().unwrap_or(false) {
-                HttpResponse::Ok().body("Captcha válido")
-            } else {
-                HttpResponse::Unauthorized().body("Captcha inválido")
-            }
+        println!("🔎 RESPUESTA GOOGLE: {}", json);
+
+        if json["success"].as_bool().unwrap_or(false) {
+            HttpResponse::Ok().body("Captcha válido")
+        } else {
+            HttpResponse::Unauthorized().body(format!(
+                "Captcha inválido: {:?}",
+                json["error-codes"]
+            ))
         }
-        Err(_) => HttpResponse::InternalServerError().body("Error verificando captcha"),
     }
 }
 
