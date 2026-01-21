@@ -4,7 +4,7 @@ document.getElementById("myForm").addEventListener("submit", async (e) => {
   const token = grecaptcha.getResponse();
 
   if (!token) {
-    alert("Por favor completa el captcha");
+    document.getElementById("msg").innerText = "❌ Completa el captcha";
     return;
   }
 
@@ -17,18 +17,20 @@ document.getElementById("myForm").addEventListener("submit", async (e) => {
       body: JSON.stringify({ token })
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-      throw new Error("Captcha inválido");
+      throw new Error(data);
     }
 
-    const msg = await res.json();
     document.getElementById("msg").innerText = "✅ Captcha válido";
+    console.log("Servidor:", data);
 
-    // 👉 aquí ya puedes enviar el formulario real
-    console.log(msg);
+    // Aquí iría tu lógica real (guardar, redirigir, etc)
 
   } catch (err) {
     document.getElementById("msg").innerText = "❌ Captcha inválido";
     grecaptcha.reset();
+    console.error(err);
   }
 });
