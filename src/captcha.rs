@@ -8,13 +8,12 @@ pub struct CaptchaRequest {
 }
 
 #[post("/captcha/verify")]
-pub async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
+pub async fn verify_captcha(
+    body: web::Json<CaptchaRequest>,
+) -> HttpResponse {
     let secret = match env::var("RECAPTCHA_SECRET") {
         Ok(v) => v,
-        Err(_) => {
-            return HttpResponse::InternalServerError()
-                .body("RECAPTCHA_SECRET no definida");
-        }
+        Err(_) => return HttpResponse::InternalServerError().body("Missing secret"),
     };
 
     let client = reqwest::Client::new();
@@ -33,11 +32,11 @@ pub async fn verify_captcha(body: web::Json<CaptchaRequest>) -> HttpResponse {
             let json: serde_json::Value = resp.json().await.unwrap();
 
             if json["success"].as_bool().unwrap_or(false) {
-                HttpResponse::Ok().body("Captcha válido")
+                HttpResponse::Ok().json(true)
             } else {
-                HttpResponse::Unauthorized().body("Captcha inválido")
+                HttpResponse::Unauthorized().json(false)
             }
         }
-        Err(_) => HttpResponse::InternalServerError().body("Error verificando captcha"),
+        Err(_) => HttpResponse::InternalServerError().body("Captcha verify failed"),
     }
 }
