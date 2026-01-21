@@ -12,7 +12,8 @@ body {
   justify-content: center;
 }
 
-form {
+/* 🔹 FORM con ID myForm */
+#myForm {
   background: #020617;
   padding: 2rem;
   border-radius: 12px;
@@ -21,9 +22,11 @@ form {
   box-shadow: 0 10px 30px rgba(0,0,0,.5);
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 1rem;
+/* 🔹 reCAPTCHA centrado */
+.g-recaptcha {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
 }
 
 button {
@@ -42,7 +45,8 @@ button:hover {
   background: #1d4ed8;
 }
 
-.message {
+/* 🔹 Mensaje con ID msg */
+#msg {
   margin-top: 1rem;
   text-align: center;
   font-size: 0.9rem;

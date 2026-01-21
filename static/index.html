@@ -1,29 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Formulario con reCAPTCHA</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="/css/styles.css">
-
-  <!-- Google reCAPTCHA -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <meta charset="UTF-8" />
+  <title>Captcha</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <form id="myForm">
-    <h2>Verificación</h2>
+<form id="myForm">
+  <div class="g-recaptcha" data-sitekey="TU_SITE_KEY_AQUI"></div>
+  <button type="submit">Enviar</button>
+</form>
 
-    <div class="g-recaptcha" data-sitekey="6LfUO0ssAAAAAF60xO0omHMsyp50p8sw3j_sVF-1"></div>
+<p id="msg"></p>
 
-    <button type="submit">Enviar</button>
-
-    <div id="msg" class="message"></div>
-  </form>
-
-  <!-- JS -->
-  <script src="/js/captcha.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="captcha.js"></script>
 
 </body>
 </html>
