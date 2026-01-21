@@ -1,7 +1,7 @@
-use actix_files::Files;
+use actix_files::{Files, NamedFile};
 use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use serde::Deserialize;
-use std::env;
+use std::{env, path::PathBuf};
 
 #[derive(Deserialize)]
 struct CaptchaRequest {
@@ -9,10 +9,8 @@ struct CaptchaRequest {
 }
 
 #[get("/")]
-async fn index() -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body(include_str!("../static/index.html"))
+async fn index() -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open(PathBuf::from("./static/index.html"))?)
 }
 
 #[get("/health")]
@@ -54,6 +52,8 @@ async fn main() -> std::io::Result<()> {
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
         .expect("PORT inválido");
+
+    println!("🚀 Iniciando servidor en 0.0.0.0:{port}");
 
     HttpServer::new(|| {
         App::new()
