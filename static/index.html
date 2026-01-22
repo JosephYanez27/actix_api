@@ -2,29 +2,91 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Formulario con reCAPTCHA</title>
+  <title>Mi Sitio</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="/styles.css">
-
-  <!-- Google reCAPTCHA -->
+  <link rel="stylesheet" href="styles.css">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
-  <form id="myForm">
-    <h2>Verificación</h2>
+<!-- MENÚ -->
+<nav class="menu">
+  <button onclick="showSection('home')">Inicio</button>
+  <button onclick="showSection('contact')">Contacto</button>
+</nav>
+
+<!-- INICIO -->
+<section id="home" class="section active">
+  <h1>Bienvenido</h1>
+  <div class="carousel">
+    <img id="carousel-img" src="/images/t.jpg" alt="Carrusel">
+    <img id="carousel-img" src="/images/e.jpg" alt="Carrusel">
+    <img id="carousel-img" src="/images/v.jpg" alt="Carrusel">
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contact" class="section">
+
+    <h2>Contacto</h2>
+
+  <form id="contactForm">
+
+  <input
+    type="text"
+    id="nombre"
+    placeholder="Nombre"
+    maxlength="50"
+    required
+  >
+
+  <input
+    type="email"
+    id="correo"
+    placeholder="Correo"
+    maxlength="100"
+    required
+  >
+
+  <input
+    type="tel"
+    id="telefono"
+    placeholder="Teléfono"
+    maxlength="10"
+    required
+  >
+
+  <textarea
+    id="mensaje"
+    placeholder="Mensaje"
+    maxlength="300"
+    required
+  ></textarea>
+
+  <button type="submit">Enviar</button>
+
+  <div id="msg"></div>
+
+</form>
 
     <div class="g-recaptcha"
-         data-sitekey="6Lc_-FEsAAAAAKjXo4s-QO3biPZIUICn4pqJPcY3"></div>
+      data-sitekey="6Lc_-FEsAAAAAKjXo4s-QO3biPZIUICn4pqJPcY3">
+    </div>
 
     <button type="submit">Enviar</button>
-
-    <div id="msg" class="message"></div>
+    <div id="msg"></div>
   </form>
+</section>
 
-  <!-- JS -->
-  <script src="/captcha.js"></script>
+<script src="carousel.js"></script>
+<script src="captcha.js"></script>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+</script>
 
 </body>
 </html>
