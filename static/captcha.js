@@ -1,35 +1,82 @@
-document.getElementById("myForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("myForm");
+  const msg = document.getElementById("msg");
 
-  const token = grecaptcha.getResponse();
-  console.log("TOKEN:", token);
+  // ❌ NO números en nombre
+  form.nombre.addEventListener("input", () => {
+    form.nombre.value = form.nombre.value.replace(
+      /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
+      ""
+    );
+  });
 
-  if (!token) {
-    document.getElementById("msg").innerText = "❌ Completa el captcha";
-    return;
-  }
+  // ❌ NO letras en teléfono
+  form.telefono.addEventListener("input", () => {
+    form.telefono.value = form.telefono.value.replace(/\D/g, "");
+  });
 
-  try {
-    const res = await fetch("/captcha/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ token })
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.innerText = "";
 
-    const isValid = await res.json(); // 👈 BOOLEAN
-
-    if (isValid === true) {
-      document.getElementById("msg").innerText = "✅ Captcha válido";
-    } else {
-      document.getElementById("msg").innerText = "❌ Captcha inválido";
+    // 🔐 reCAPTCHA
+    const token = grecaptcha.getResponse();
+    if (!token) {
+      msg.innerText = "❌ Completa el captcha";
+      return;
     }
 
-    grecaptcha.reset();
+    const data = {
+      nombre: form.nombre.value.trim(),
+      correo: form.correo.value.trim(),
+      telefono: form.telefono.value.trim(),
+      mensaje: form.mensaje.value.trim(),
+      recaptcha_token: token
+    };
 
-  } catch (err) {
-    document.getElementById("msg").innerText = "❌ Error al verificar captcha";
-    grecaptcha.reset();
-  }
+    // 🧪 Validaciones finales
+    if (
+      !data.nombre ||
+      !data.correo ||
+      !data.telefono ||
+      !data.mensaje
+    ) {
+      msg.innerText = "❌ Completa todos los campos";
+      return;
+    }
+
+    if (data.telefono.length !== 10) {
+      msg.innerText = "❌ El teléfono debe tener 10 dígitos";
+      return;
+    }
+
+    try {
+      const res = await fetch("/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) {
+        throw new Error("Error HTTP");
+      }
+
+      const ok = await res.json();
+
+      if (ok === true) {
+        msg.innerText = "✅ Mensaje enviado correctamente";
+        form.reset();
+        grecaptcha.reset();
+      } else {
+        msg.innerText = "❌ Error al enviar el mensaje";
+        grecaptcha.reset();
+      }
+
+    } catch (err) {
+      msg.innerText = "❌ Error del servidor";
+      grecaptcha.reset();
+    }
+  });
 });
