@@ -1,7 +1,26 @@
-const images = ["img1.jpg", "img2.jpg", "img3.jpg"];
-let i = 0;
+const images = document.querySelectorAll(".carousel-track img");
+const dots = document.querySelectorAll(".dot");
 
+let index = 0;
+
+function showSlide(i) {
+  images.forEach(img => img.classList.remove("active"));
+  dots.forEach(dot => dot.classList.remove("active"));
+
+  images[i].classList.add("active");
+  dots[i].classList.add("active");
+}
+
+// Dots clicables
+dots.forEach((dot, i) => {
+  dot.addEventListener("click", () => {
+    index = i;
+    showSlide(index);
+  });
+});
+
+// Auto slide
 setInterval(() => {
-  i = (i + 1) % images.length;
-  document.getElementById("carousel-img").src = images[i];
-}, 3000);
+  index = (index + 1) % images.length;
+  showSlide(index);
+}, 4000);

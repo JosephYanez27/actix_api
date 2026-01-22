@@ -1,15 +1,22 @@
 mod contact;
-
+mod carousel;
 use actix_files::Files;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 
 use contact::save_contact;
-
+use carousel::upload_image;
 #[get("/health")]
 async fn health() -> HttpResponse {
     HttpResponse::Ok().body("OK")
+}
+
+#[get("/error")]
+async fn error_page() -> HttpResponse {
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(include_str!("../static/error.html"))
 }
 
 #[actix_web::main]
@@ -35,8 +42,19 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .service(health)
+            .service(error_page)
             .service(save_contact)
+            .service(upload_image)
+            .service(Files::new("/images", "./static/images"))
             .service(Files::new("/", "./static").index_file("index.html"))
+            // 👇 fallback global
+            .default_service(
+                web::route().to(|| async {
+                    HttpResponse::Found()
+                        .append_header(("Location", "/error"))
+                        .finish()
+                }),
+            )
     })
     .bind(("0.0.0.0", port))?
     .run()

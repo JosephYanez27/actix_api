@@ -16,5 +16,7 @@ dotenvy = "0.15"
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls", "uuid", "chrono"] }
 uuid = { version = "1", features = ["v4"] }
 chrono = "0.4"
+actix-multipart = "0.6"
+futures-util = "0.3"
 
 
