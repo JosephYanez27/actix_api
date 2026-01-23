@@ -18,24 +18,15 @@
   <h1>Bienvenido</h1>
 
   <div class="carousel">
+    <div class="carousel-track" id="carouselTrack"></div>
 
-    <div class="carousel-track" id="carouselTrack">
-      <img src="/images/carousel/t.jpg" class="active">
-      <img src="/images/carousel/e.jpg">
-      <img src="/images/carousel/v.jpg">
-    </div>
-
-    <div class="carousel-dots" id="carouselDots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
-
+    <!-- 🔴 NECESARIO para los dots -->
+    <div class="carousel-dots"></div>
     <button class="add-btn" onclick="openFile()">➕ Agregar</button>
     <input type="file" id="fileInput" accept="image/*" hidden>
-
-  </div>
+</div>
 </section>
+
 
 
 <section id="contact" class="section">

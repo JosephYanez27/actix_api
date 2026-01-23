@@ -5,9 +5,11 @@ use actix_files::Files;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
+use carousel::{upload_image, list_images, get_image};
+
 
 use contact::save_contact;
-use carousel::upload_image;
+
 
 async fn favicon() -> HttpResponse {
     HttpResponse::NoContent().finish()
@@ -61,6 +63,8 @@ async fn main() -> std::io::Result<()> {
             .service(error_page)
             .service(save_contact)
             .service(upload_image)
+            .service(list_images)
+            .service(get_image)
 
             // 📂 imágenes del carrusel
             .service(Files::new("/images", "./static/images"))

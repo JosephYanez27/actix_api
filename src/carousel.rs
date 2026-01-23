@@ -1,46 +1,105 @@
 use actix_multipart::Multipart;
-use actix_web::{post, HttpResponse};
+use actix_web::{get, post, web, HttpResponse};
 use futures_util::StreamExt;
-use uuid::Uuid;
-use std::fs::{self, File};
-use std::io::Write;
+use sqlx::{PgPool, Row};
 
 #[post("/carousel/upload")]
-pub async fn upload_image(mut payload: Multipart) -> HttpResponse {
-    // asegurar carpeta
-    fs::create_dir_all("./static/images/carousel").ok();
-
+pub async fn upload_image(
+    mut payload: Multipart,
+    pool: web::Data<PgPool>,
+) -> HttpResponse {
     while let Some(item) = payload.next().await {
         let mut field = match item {
             Ok(f) => f,
-            Err(_) => return HttpResponse::BadRequest().body("Multipart error"),
-        };
-let content_type = match field.content_type() {
-    Some(ct) => ct.to_string(),
-    None => return HttpResponse::BadRequest().body("Sin content-type"),
-};
-
-        let ext = match content_type.as_str() {
-            "image/png" => "png",
-            "image/jpeg" => "jpg",
-            "image/webp" => "webp",
-            _ => return HttpResponse::BadRequest().body("Tipo no permitido"),
+            Err(_) => return HttpResponse::BadRequest().body("Campo inválido"),
         };
 
-        let filename = format!("{}.{}", Uuid::new_v4(), ext);
-        let filepath = format!("./static/images/carousel/{}", filename);
+        let filename = field
+            .content_disposition()
+            .get_filename()
+            .unwrap_or("image")
+            .to_string();
 
-        let mut f = File::create(&filepath).unwrap();
+        let mime_type = field
+            .content_type()
+            .map(|m| m.to_string())
+            .unwrap_or_else(|| "application/octet-stream".into());
 
+        let mut bytes = Vec::new();
         while let Some(chunk) = field.next().await {
-            let data = chunk.unwrap();
-            f.write_all(&data).unwrap();
+            match chunk {
+                Ok(data) => bytes.extend_from_slice(&data),
+                Err(_) => return HttpResponse::InternalServerError().finish(),
+            }
+        }
+
+        if bytes.is_empty() {
+            return HttpResponse::BadRequest().body("Imagen vacía");
+        }
+
+        if let Err(e) = sqlx::query(
+            "INSERT INTO carousel_images (filename, mime_type, data)
+             VALUES ($1, $2, $3)"
+        )
+        .bind(filename)
+        .bind(mime_type)
+        .bind(bytes)
+        .execute(pool.get_ref())
+        .await
+        {
+            eprintln!("DB ERROR: {e}");
+            return HttpResponse::InternalServerError().finish();
         }
 
         return HttpResponse::Ok().json(serde_json::json!({
-            "url": format!("/images/carousel/{}", filename)
+            "status": "ok"
         }));
     }
 
-    HttpResponse::BadRequest().finish()
+    HttpResponse::BadRequest().body("No se recibió imagen")
+}
+
+#[get("/carousel/list")]
+pub async fn list_images(pool: web::Data<PgPool>) -> HttpResponse {
+    match sqlx::query("SELECT id FROM carousel_images ORDER BY created_at")
+        .fetch_all(pool.get_ref())
+        .await
+    {
+        Ok(rows) => {
+            let ids: Vec<i32> = rows
+                .into_iter()
+                .map(|r| r.get::<i32, _>("id"))
+                .collect();
+
+            HttpResponse::Ok().json(ids)
+        }
+        Err(e) => {
+            eprintln!("DB ERROR: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[get("/carousel/image/{id}")]
+pub async fn get_image(
+    path: web::Path<i32>,
+    pool: web::Data<PgPool>,
+) -> HttpResponse {
+    match sqlx::query(
+        "SELECT data, mime_type FROM carousel_images WHERE id = $1"
+    )
+    .bind(*path)
+    .fetch_one(pool.get_ref())
+    .await
+    {
+        Ok(row) => {
+            let data: Vec<u8> = row.get("data");
+            let mime: String = row.get("mime_type");
+
+            HttpResponse::Ok()
+                .content_type(mime)
+                .body(data)
+        }
+        Err(_) => HttpResponse::NotFound().finish(),
+    }
 }

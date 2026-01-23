@@ -194,4 +194,13 @@ body {
   border-radius: 8px;
   cursor: pointer;
 }
+.carousel-track img {
+  display: none;
+  width: 100%;
+}
+
+.carousel-track img.active {
+  display: block;
+}
+
 
