@@ -7,6 +7,12 @@ use std::env;
 
 use contact::save_contact;
 use carousel::upload_image;
+
+
+async fn favicon() -> HttpResponse {
+    HttpResponse::NoContent().finish()
+}
+
 #[get("/health")]
 async fn health() -> HttpResponse {
     HttpResponse::Ok().body("OK")
@@ -47,6 +53,10 @@ async fn main() -> std::io::Result<()> {
             .service(upload_image)
             .service(Files::new("/images", "./static/images"))
             .service(Files::new("/", "./static").index_file("index.html"))
+            .service(
+    web::resource("/favicon.ico").to(favicon)
+)
+
             // 👇 fallback global
             .default_service(
                 web::route().to(|| async {
