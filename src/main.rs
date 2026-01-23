@@ -1,5 +1,6 @@
 mod contact;
 mod carousel;
+
 use actix_files::Files;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
 use sqlx::postgres::PgPoolOptions;
@@ -7,7 +8,6 @@ use std::env;
 
 use contact::save_contact;
 use carousel::upload_image;
-
 
 async fn favicon() -> HttpResponse {
     HttpResponse::NoContent().finish()
@@ -29,20 +29,30 @@ async fn error_page() -> HttpResponse {
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
 
+    // ✅ Railway PORT
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
         .expect("PORT inválido");
 
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL no configurada");
+    // ✅ BD OPCIONAL
+    let pool = match env::var("DATABASE_URL") {
+        Ok(database_url) => {
+            println!("🗄️ Base de datos configurada");
+            Some(
+                PgPoolOptions::new()
+                    .max_connections(5)
+                    .connect_lazy(&database_url)
+                    .expect("Pool inválido"),
+            )
+        }
+        Err(_) => {
+            println!("⚠️ DATABASE_URL no definida (formulario deshabilitado)");
+            None
+        }
+    };
 
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect_lazy(&database_url)
-        .expect("Pool inválido");
-
-    println!("🚀 Servidor en puerto {port}");
+    println!("🚀 Servidor escuchando en puerto {port}");
 
     HttpServer::new(move || {
         App::new()
@@ -51,13 +61,17 @@ async fn main() -> std::io::Result<()> {
             .service(error_page)
             .service(save_contact)
             .service(upload_image)
-            .service(Files::new("/images", "./static/images"))
-            .service(Files::new("/", "./static").index_file("index.html"))
-            .service(
-    web::resource("/favicon.ico").to(favicon)
-)
 
-            // 👇 fallback global
+            // 📂 imágenes del carrusel
+            .service(Files::new("/images", "./static/images"))
+
+            // 🌐 frontend
+            .service(Files::new("/", "./static").index_file("index.html"))
+
+            // 🧩 favicon
+            .service(web::resource("/favicon.ico").to(favicon))
+
+            // 🚑 fallback
             .default_service(
                 web::route().to(|| async {
                     HttpResponse::Found()
