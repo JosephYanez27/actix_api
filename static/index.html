@@ -1,93 +1,31 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mi Sitio</title>
-
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<meta charset="UTF-8">
+<title>SoftPro Solutions</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav class="menu">
-  <button onclick="showSection('home')">Inicio</button>
-  <button onclick="showSection('contact')">Contacto</button>
+  <a href="index.html">Inicio</a>
+  <a href="services.html">Servicios</a>
+  <a href="about.html">Nosotros</a>
+  <a href="contact.html">Contacto</a>
 </nav>
 
-<section id="home" class="section active">
-  <h1>Bienvenido</h1>
+<section class="section active">
+<h1>Soluciones de Software a Medida</h1>
+<p>Desarrollamos sistemas web, móviles y APIs modernas.</p>
 
-  <div class="carousel">
-    <div class="carousel-track" id="carouselTrack"></div>
-
-    <!-- 🔴 NECESARIO para los dots -->
-    <div class="carousel-dots"></div>
-    <button class="add-btn" onclick="openFile()">➕ Agregar</button>
-    <input type="file" id="fileInput" accept="image/*" hidden>
+<div class="carousel">
+  <div id="carouselTrack" class="carousel-track"></div>
+  <div class="carousel-dots"></div>
+  <button onclick="openFile()">➕ Agregar</button>
+  <input type="file" id="fileInput" hidden>
 </div>
 </section>
-
-
-
-<section id="contact" class="section">
-  <h2>Contacto</h2>
-
-  <form id="myForm" novalidate>
-
-    <input
-      type="text"
-      name="nombre"
-      placeholder="Nombre"
-      maxlength="50"
-      required
-    >
-
-    <input
-      type="email"
-      name="correo"
-      placeholder="Correo"
-      required
-    >
-
-    <input
-      type="tel"
-      name="telefono"
-      placeholder="Teléfono"
-      maxlength="10"
-      required
-    >
-
-    <textarea
-      name="mensaje"
-      placeholder="Mensaje"
-      maxlength="300"
-      required
-    ></textarea>
-
-    <div
-      class="g-recaptcha"
-      data-sitekey="6Lc_-FEsAAAAAKjXo4s-QO3biPZIUICn4pqJPcY3">
-    </div>
-
-    <button type="submit">Enviar</button>
-
-    <p id="msg"></p>
-  </form>
-</section>
-
 <script src="carousel.js"></script>
-<script src="captcha.js"></script>
 <script src="upload.js"></script>
-
-
-<script>
-function showSection(id) {
-  document.querySelectorAll(".section")
-    .forEach(s => s.classList.remove("active"));
-
-  document.getElementById(id).classList.add("active");
-}
-</script>
-
 </body>
 </html>

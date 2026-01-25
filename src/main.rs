@@ -71,13 +71,10 @@ async fn main() -> std::io::Result<()> {
             .service(list_images)
             .service(get_image)
 
-            // Frontend
-            .service(Files::new("/images", "./static/images"))
+         .service(Files::new("/images", "./static/images"))
             .service(Files::new("/", "./static").index_file("index.html"))
-
-            .service(web::resource("/favicon.ico").to(favicon))
-
-            .default_service(
+.service(web::resource("/favicon.ico").to(favicon))
+.default_service(
                 web::route().to(|| async {
                     HttpResponse::Found()
                         .append_header(("Location", "/error"))
