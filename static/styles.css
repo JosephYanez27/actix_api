@@ -19,24 +19,40 @@ body {
 =========================== */
 
 .menu {
-  background: #020617;
-  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background: rgba(2,6,23,.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 5px 20px rgba(0,0,0,.4);
 }
 
-.menu button {
-  background: none;
-  border: none;
+.logo {
+  font-size: 1.3rem;
+  font-weight: bold;
   color: #38bdf8;
-  font-size: 1rem;
-  cursor: pointer;
+  letter-spacing: 1px;
 }
 
-.menu button:hover {
-  text-decoration: underline;
+.menu-links {
+  display: flex;
+  gap: 1.5rem;
 }
 
+.menu-links a {
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: .95rem;
+  transition: color .3s;
+}
+
+.menu-links a:hover {
+  color: #38bdf8;
+}
 /* ===========================
    SECCIONES
 =========================== */
@@ -195,6 +211,27 @@ body {
   text-align: center;
   font-size: 0.9rem;
 }
+.field {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.field small {
+  display: block;
+  font-size: .75rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all .3s ease;
+}
+
+.field input:focus + small,
+.field textarea:focus + small {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 
 /* ===========================
    VALIDACIONES VISUALES

@@ -9,48 +9,47 @@
 <body>
 
 <nav class="menu">
-  <a href="index.html">Inicio</a>
-  <a href="services.html">Servicios</a>
-  <a href="about.html">Nosotros</a>
-  <a href="contact.html">Contacto</a>
+  <div class="logo">SoftPro</div>
+
+  <div class="menu-links">
+    <a href="#" onclick="showSection('home')">Inicio</a>
+    <a href="#" onclick="showSection('services')">Servicios</a>
+    <a href="#" onclick="showSection('about')">Nosotros</a>
+    <a href="#" onclick="showSection('contact')">Contacto</a>
+  </div>
 </nav>
+
 
 <section class="section active">
 
 <h2>Contacto</h2>
 
-<form id="myForm">
+<form id="myForm" novalidate>
 
-<div class="form-group">
-<input id="nombre" placeholder="Nombre completo">
-<small>Solo letras (mín 3)</small>
-<span class="error" id="errNombre"></span>
-</div>
+  <div class="field">
+    <input type="text" name="nombre" placeholder="Nombre" required>
+    <small>Solo letras (mínimo 3)</small>
+  </div>
 
-<div class="form-group">
-<input id="correo" placeholder="Correo">
-<small>ejemplo@correo.com</small>
-<span class="error" id="errCorreo"></span>
-</div>
+  <div class="field">
+    <input type="email" name="correo" placeholder="Correo" required>
+    <small>Formato válido: ejemplo@mail.com</small>
+  </div>
 
-<div class="form-group">
-<input id="telefono" placeholder="Teléfono">
-<small>10 números</small>
-<span class="error" id="errTelefono"></span>
-</div>
+  <div class="field">
+    <input type="tel" name="telefono" placeholder="Teléfono" maxlength="10" required>
+    <small>10 números</small>
+  </div>
 
-<div class="form-group">
-<textarea id="mensaje" placeholder="Mensaje"></textarea>
-<small>10 a 300 caracteres</small>
-<span class="error" id="errMensaje"></span>
-</div>
+  <div class="field">
+    <textarea name="mensaje" placeholder="Mensaje" required></textarea>
+    <small>10 a 300 caracteres</small>
+  </div>
 
-<div class="g-recaptcha" data-sitekey="6Lc_-FEsAAAAAKjXo4s-QO3biPZIUICn4pqJPcY3"></div>
+  <div class="g-recaptcha" data-sitekey="TU_SITE_KEY"></div>
 
-<button type="submit">Enviar</button>
-
-<p id="msg"></p>
-
+  <button type="submit">Enviar</button>
+  <p id="msg"></p>
 </form>
 
 </section>
