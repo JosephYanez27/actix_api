@@ -22,6 +22,14 @@
 <h2>Sobre Nosotros</h2>
 <p>Creamos software moderno, seguro y escalable.</p>
 </section>
+<script>
+function showSection(id) {
+  document.querySelectorAll(".section")
+    .forEach(s => s.classList.remove("active"));
+
+  document.getElementById(id).classList.add("active");
+}
+</script>
 
 </body>
 </html>
