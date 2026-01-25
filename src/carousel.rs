@@ -6,8 +6,18 @@ use sqlx::{PgPool, Row};
 #[post("/carousel/upload")]
 pub async fn upload_image(
     mut payload: Multipart,
-    pool: web::Data<PgPool>,
+    pool: web::Data<Option<PgPool>>,
 ) -> HttpResponse {
+
+    let pool = match pool.get_ref() {
+        Some(p) => p,
+        None => {
+            eprintln!("❌ Pool no disponible");
+            return HttpResponse::InternalServerError()
+                .body("DB no disponible");
+        }
+    };
+
     while let Some(item) = payload.next().await {
         let mut field = match item {
             Ok(f) => f,
@@ -29,6 +39,7 @@ pub async fn upload_image(
             .unwrap_or_else(|| "application/octet-stream".to_string());
 
         let mut bytes = Vec::new();
+
         while let Some(chunk) = field.next().await {
             match chunk {
                 Ok(data) => bytes.extend_from_slice(&data),
@@ -50,10 +61,10 @@ pub async fn upload_image(
         .bind(filename)
         .bind(mime_type)
         .bind(bytes)
-        .execute(pool.get_ref())
+        .execute(pool)
         .await
         {
-            eprintln!("DB INSERT ERROR: {e}");
+            eprintln!("❌ DB INSERT IMAGE ERROR: {e}");
             return HttpResponse::InternalServerError()
                 .body("Error guardando imagen");
         }
@@ -67,16 +78,28 @@ pub async fn upload_image(
 }
 
 #[get("/carousel/list")]
-pub async fn list_images(pool: web::Data<PgPool>) -> HttpResponse {
+pub async fn list_images(
+    pool: web::Data<Option<PgPool>>,
+) -> HttpResponse {
+
+    let pool = match pool.get_ref() {
+        Some(p) => p,
+        None => {
+            eprintln!("❌ Pool no disponible");
+            return HttpResponse::InternalServerError()
+                .body("DB no disponible");
+        }
+    };
+
     let rows = match sqlx::query(
         "SELECT id FROM carousel_images ORDER BY created_at"
     )
-    .fetch_all(pool.get_ref())
+    .fetch_all(pool)
     .await
     {
         Ok(r) => r,
         Err(e) => {
-            eprintln!("DB SELECT LIST ERROR: {e}");
+            eprintln!("❌ DB SELECT LIST ERROR: {e}");
             return HttpResponse::InternalServerError()
                 .body("Error listando imágenes");
         }
@@ -93,18 +116,27 @@ pub async fn list_images(pool: web::Data<PgPool>) -> HttpResponse {
 #[get("/carousel/image/{id}")]
 pub async fn get_image(
     path: web::Path<i32>,
-    pool: web::Data<PgPool>,
+    pool: web::Data<Option<PgPool>>,
 ) -> HttpResponse {
+
+    let pool = match pool.get_ref() {
+        Some(p) => p,
+        None => {
+            eprintln!("❌ Pool no disponible");
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
+
     let row = match sqlx::query(
         "SELECT data, mime_type FROM carousel_images WHERE id = $1"
     )
     .bind(*path)
-    .fetch_one(pool.get_ref())
+    .fetch_one(pool)
     .await
     {
         Ok(r) => r,
         Err(e) => {
-            eprintln!("DB SELECT IMAGE ERROR: {e}");
+            eprintln!("❌ DB SELECT IMAGE ERROR: {e}");
             return HttpResponse::NotFound().finish();
         }
     };

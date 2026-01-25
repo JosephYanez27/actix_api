@@ -64,7 +64,8 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             // 👉 compartimos pool como Option<PgPool>
-            .app_data(web::Data::new(pool.clone()))
+            .app_data(web::Data::new(Some(pool.clone())))
+
 
             .service(health)
             .service(error_page)
