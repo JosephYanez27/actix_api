@@ -27,63 +27,56 @@ async fn error_page() -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenvy::dotenv().ok();
 
-    // ✅ Railway PORT
+    // ✅ Railway ya provee PORT
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
         .expect("PORT inválido");
 
-    // ✅ CONEXIÓN SEGURA (no crashea si falla)
-    let pool = match env::var("DATABASE_URL") {
-        Ok(database_url) => {
-            match PgPoolOptions::new()
-                .max_connections(5)
-                .connect(&database_url)
-                .await
-            {
-                Ok(p) => {
-                    println!("✅ Conectado a Postgres");
-                    Some(p)
-                }
-                Err(e) => {
-                    eprintln!("⚠️ No se pudo conectar a BD: {e}");
-                    None
-                }
-            }
+    // ✅ Railway ya provee DATABASE_URL
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL no configurada");
+
+    println!("🔗 Conectando a DB...");
+
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await;
+
+    // 👉 No crashear si falla (para que no haya 502)
+    let pool = match pool {
+        Ok(p) => {
+            println!("🗄️ DB conectada");
+            Some(p)
         }
-        Err(_) => {
-            println!("⚠️ DATABASE_URL no definida");
+        Err(e) => {
+            eprintln!("❌ No se pudo conectar DB: {e}");
             None
         }
     };
 
-    println!("🚀 Servidor escuchando en puerto {port}");
+    println!("🚀 Servidor puerto {port}");
 
     HttpServer::new(move || {
         App::new()
-            // 👉 compartimos pool como Option<PgPool>
-            .app_data(web::Data::new(Some(pool.clone())))
-
+            .app_data(web::Data::new(pool.clone()))
 
             .service(health)
             .service(error_page)
+
             .service(save_contact)
             .service(upload_image)
             .service(list_images)
             .service(get_image)
 
-            // 📂 imágenes estáticas
+            // Frontend
             .service(Files::new("/images", "./static/images"))
-
-            // 🌐 frontend
             .service(Files::new("/", "./static").index_file("index.html"))
 
-            // 🧩 favicon
             .service(web::resource("/favicon.ico").to(favicon))
 
-            // 🚑 fallback
             .default_service(
                 web::route().to(|| async {
                     HttpResponse::Found()
