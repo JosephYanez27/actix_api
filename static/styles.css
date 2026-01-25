@@ -1,64 +1,23 @@
+/* ===========================
+   RESET GENERAL
+=========================== */
+
 * {
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-body {
-  background: #0f172a;
-  color: #e5e7eb;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 🔹 FORM con ID myForm */
-#myForm {
-  background: #020617;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.5);
-}
-
-/* 🔹 reCAPTCHA centrado */
-.g-recaptcha {
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0;
-}
-
-button {
-  width: 100%;
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: #2563eb;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-/* 🔹 Mensaje con ID msg */
-#msg {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-}
 body {
   margin: 0;
-  background: #0f172a;
-  color: white;
-  font-family: Arial;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: #e5e7eb;
 }
 
-/* MENÚ */
+/* ===========================
+   MENÚ
+=========================== */
+
 .menu {
   background: #020617;
   padding: 1rem;
@@ -74,7 +33,14 @@ body {
   cursor: pointer;
 }
 
-/* SECCIONES */
+.menu button:hover {
+  text-decoration: underline;
+}
+
+/* ===========================
+   SECCIONES
+=========================== */
+
 .section {
   display: none;
   padding: 2rem;
@@ -84,45 +50,12 @@ body {
   display: block;
 }
 
-
-
-
-
-/* FORM */
-form {
-  max-width: 350px;
-  margin: auto;
-  background: #020617;
-  padding: 1.5rem;
-  border-radius: 12px;
-}
-
-input, textarea {
-  width: 100%;
-  margin-bottom: 0.7rem;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: none;
-}
-
-button[type="submit"] {
-  width: 100%;
-  padding: 0.7rem;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-}
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at top, #0f172a, #020617);
-  color: white;
-}
+/* ===========================
+   HERO / HOME
+=========================== */
 
 .hero {
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,6 +69,10 @@ body {
   letter-spacing: 1px;
 }
 
+/* ===========================
+   CARRUSEL
+=========================== */
+
 .carousel {
   width: 340px;
   position: relative;
@@ -147,7 +84,7 @@ body {
   height: 380px;
   overflow: hidden;
   border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 }
 
 .carousel-track img {
@@ -155,12 +92,12 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
+  display: none;
   transition: opacity 0.6s ease-in-out;
 }
 
 .carousel-track img.active {
-  opacity: 1;
+  display: block;
 }
 
 .carousel-dots {
@@ -183,6 +120,7 @@ body {
   background: #38bdf8;
   transform: scale(1.2);
 }
+
 .add-btn {
   position: absolute;
   bottom: 15px;
@@ -194,13 +132,95 @@ body {
   border-radius: 8px;
   cursor: pointer;
 }
-.carousel-track img {
-  display: none;
+
+/* ===========================
+   FORMULARIO CONTACTO
+=========================== */
+
+#myForm {
+  background: #020617;
+  padding: 2rem;
+  border-radius: 12px;
   width: 100%;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
 }
 
-.carousel-track img.active {
-  display: block;
+#myForm input,
+#myForm textarea {
+  width: 100%;
+  margin-bottom: 0.8rem;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.95rem;
 }
 
+#myForm input:focus,
+#myForm textarea:focus {
+  outline: 2px solid #38bdf8;
+}
 
+/* Botón submit */
+
+#myForm button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#myForm button:hover {
+  background: #1d4ed8;
+}
+
+/* reCAPTCHA centrado */
+
+.g-recaptcha {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+/* Mensaje */
+
+#msg {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* ===========================
+   VALIDACIONES VISUALES
+=========================== */
+
+input.error,
+textarea.error {
+  outline: 2px solid #ef4444;
+}
+
+input.success,
+textarea.success {
+  outline: 2px solid #22c55e;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 480px) {
+
+  .carousel {
+    width: 90%;
+  }
+
+  #myForm {
+    width: 95%;
+  }
+}
