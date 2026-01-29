@@ -37,6 +37,10 @@ pub async fn upload_image(
             .content_type()
             .map(|m| m.to_string())
             .unwrap_or_else(|| "application/octet-stream".to_string());
+            if !mime_type.starts_with("image/") {
+    return HttpResponse::BadRequest()
+        .body("Solo se permiten imágenes");
+}
 
         let mut bytes = Vec::new();
 

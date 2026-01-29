@@ -9,6 +9,21 @@ input.addEventListener("change", async () => {
   const file = input.files[0];
   if (!file) return;
 
+  // ✅ VALIDAR QUE SEA IMAGEN
+  if (!file.type.startsWith("image/")) {
+    alert("❌ Solo se permiten imágenes (jpg, png, webp, etc)");
+    input.value = ""; // reset
+    return;
+  }
+
+  // (opcional) límite de tamaño 5MB
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    alert("❌ Imagen muy grande (máx 5MB)");
+    input.value = "";
+    return;
+  }
+
   const formData = new FormData();
   formData.append("image", file);
 
@@ -18,7 +33,7 @@ input.addEventListener("change", async () => {
   });
 
   if (!res.ok) {
-    alert("Error al subir imagen");
+    alert("❌ Error al subir imagen");
     return;
   }
 
@@ -39,7 +54,7 @@ async function loadImages() {
     track.appendChild(img);
   });
 
-  // Avisamos al carrusel que ya hay imágenes
+  // 🔄 avisar al carrusel
   document.dispatchEvent(new Event("carousel:loaded"));
 }
 
