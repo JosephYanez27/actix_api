@@ -18,66 +18,66 @@ async fn health() -> HttpResponse {
     HttpResponse::Ok().body("OK")
 }
 
-#[get("/error")]
-async fn error_page() -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body(include_str!("../static/error.html"))
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    // ✅ Railway ya provee PORT
+    println!("✅ Iniciando app...");
+
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
-        .expect("PORT inválido");
+        .unwrap();
 
-    // ✅ Railway ya provee DATABASE_URL
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL no configurada");
+    println!("🌐 Puerto: {port}");
 
-    println!("🔗 Conectando a DB...");
-
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await;
-
-    // 👉 No crashear si falla (para que no haya 502)
-    let pool = match pool {
-        Ok(p) => {
-            println!("🗄️ DB conectada");
-            Some(p)
+    let pool = match env::var("DATABASE_URL") {
+        Ok(url) => {
+            println!("🔗 Conectando DB...");
+            match PgPoolOptions::new()
+                .max_connections(5)
+                .connect(&url)
+                .await
+            {
+                Ok(p) => {
+                    println!("🗄️ DB conectada");
+                    Some(p)
+                }
+                Err(e) => {
+                    eprintln!("❌ Error DB: {e}");
+                    None
+                }
+            }
         }
-        Err(e) => {
-            eprintln!("❌ No se pudo conectar DB: {e}");
+        Err(_) => {
+            println!("⚠️ DATABASE_URL no configurada");
             None
         }
     };
-
-    println!("🚀 Servidor puerto {port}");
 
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
 
             .service(health)
-            .service(error_page)
 
+            // 📌 APIs
             .service(save_contact)
             .service(upload_image)
             .service(list_images)
             .service(get_image)
 
-         .service(Files::new("/images", "./static/images"))
+            // 📂 archivos estáticos
+            .service(Files::new("/images", "./static/images"))
             .service(Files::new("/", "./static").index_file("index.html"))
-.service(web::resource("/favicon.ico").to(favicon))
-.default_service(
+
+            // 🧩 favicon
+            .service(web::resource("/favicon.ico").to(favicon))
+
+            // 🚑 pantalla de error
+            .default_service(
                 web::route().to(|| async {
                     HttpResponse::Found()
-                        .append_header(("Location", "/error"))
+                        .append_header(("Location", "/error.html"))
                         .finish()
                 }),
             )
