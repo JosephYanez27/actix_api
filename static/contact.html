@@ -41,10 +41,18 @@
     <small>10 números</small>
   </div>
 
-  <div class="field">
-    <textarea name="mensaje" placeholder="Mensaje" required></textarea>
-    <small>10 a 300 caracteres</small>
-  </div>
+<div class="field">
+  <textarea 
+    name="mensaje" 
+    id="mensaje"
+    placeholder="Escribe tu mensaje..."
+    required
+    minlength="10"
+    maxlength="300"
+  ></textarea>
+
+  <small id="msgHelp">10 a 300 caracteres. aqui no inyecciones sql Moreno.</small>
+</div>
 
   <div class="g-recaptcha" data-sitekey="6Lc_-FEsAAAAAKjXo4s-QO3biPZIUICn4pqJPcY3"></div>
 
