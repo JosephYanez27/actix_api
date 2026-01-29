@@ -19,14 +19,26 @@ document.addEventListener("DOMContentLoaded", () => {
     form.telefono.value = form.telefono.value.replace(/\D/g, "");
   });
 
-  // 🔒 Anti inyección básica en mensaje
-  const forbidden = /['";]|--|(\/\*)|(\*\/)/g;
+  // 🔒 Caracteres peligrosos
+  const forbiddenChars = /['";]|--|(\/\*)|(\*\/)/g;
+
+  // 🚫 Palabras SQL sospechosas
+  const sqlWords = /(select|insert|update|delete|drop|truncate|alter|or\s+1=1)/i;
 
   mensaje.addEventListener("input", () => {
 
-    mensaje.value = mensaje.value.replace(forbidden, "");
+    // eliminar símbolos peligrosos
+    mensaje.value = mensaje.value.replace(forbiddenChars, "");
 
-    const len = mensaje.value.length;
+    const text = mensaje.value;
+    const len = text.length;
+
+    // detectar palabras SQL
+    if (sqlWords.test(text)) {
+      help.textContent = "❌ Texto no permitido Moreno";
+      help.style.color = "#f87171";
+      return;
+    }
 
     if (len < 10) {
       help.textContent = "❗ Mínimo 10 caracteres";
@@ -76,6 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (data.mensaje.length < 10 || data.mensaje.length > 300) {
       msg.innerText = "❌ El mensaje no cumple longitud";
+      return;
+    }
+
+    if (sqlWords.test(data.mensaje)) {
+      msg.innerText = "❌ Mensaje inválido";
       return;
     }
 
