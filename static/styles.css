@@ -323,3 +323,27 @@ textarea.success {
     width: 95%;
   }
 }
+/* ===========================
+   Bread Crums
+=========================== */
+.breadcrumbs {
+  padding: .8rem 2.5rem;
+  font-size: .85rem;
+  background: rgba(2,6,23,.6);
+  color: #94a3b8;
+}
+
+.breadcrumbs a {
+  color: #38bdf8;
+  text-decoration: none;
+  margin-right: .4rem;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+#crumbSeparator {
+  margin: 0 .4rem;
+}
+

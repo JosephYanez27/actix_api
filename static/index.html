@@ -17,6 +17,11 @@
     <a href="contact.html">Contacto</a>
   </div>
 </nav>
+<nav class="breadcrumbs">
+  <a href="#" onclick="showSection('index')">Inicio</a>
+  <span id="crumbSeparator">›</span>
+  <span id="currentCrumb">Inicio</span>
+</nav>
 
 
 <section  id="index" class="section active">
@@ -33,6 +38,24 @@
 </section>
 <script src="carousel.js"></script>
 <script src="upload.js"></script>
+<script src="breadcrumbs.js"></script>
+
+<script>
+function showSection(id) {
+
+  document.querySelectorAll(".section")
+    .forEach(s => s.classList.remove("active"));
+
+  const section = document.getElementById(id);
+
+  if (!section) return;
+
+  section.classList.add("active");
+
+  // 🧭 actualizar breadcrumb
+  updateBreadcrumb(id);
+}
+</script>
 <script>
 function showSection(id) {
   document.querySelectorAll(".section")
