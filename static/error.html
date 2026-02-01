@@ -5,39 +5,54 @@
   <title>Error</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    body {
-      display: flex;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
-      background: #0f172a;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-    }
-    .box {
-      max-width: 400px;
-    }
-    h1 {
-      font-size: 3rem;
-      color: #ef4444;
-    }
-    a {
-      color: #38bdf8;
-      text-decoration: none;
-      font-weight: bold;
-    }
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: radial-gradient(circle at top,#0f172a,#020617);
+  font-family: Arial, sans-serif;
+  color:white;
+}
+   
   </style>
 </head>
 <body>
 
-<div class="box">
-  <h1>😵 Algo salió mal</h1>
-  <p>Ocurrió un error inesperado Moreno.</p>
-  <p>Intenta nuevamente más tarde.</p>
-  <br>
-  <a href="/">⬅ Volver al inicio</a>
+<div class="error-card">
+  <h1>⚠ Error</h1>
+  <p>Se produjo un problema inesperado.</p>
+  <p>En unos minutos volverás al inicio automáticamente.</p>
+
+  <div class="redirect">
+    Redireccionando en <span id="timer">00:10</span>
+  </div>
+
+  <a href="/">Volver ahora</a>
 </div>
 
+<script>
+let seconds = 10; // 10 minutos
+
+const timer = document.getElementById("timer");
+
+function updateTimer(){
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+
+  timer.textContent = 
+    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+
+  if(seconds === 0){
+    window.location.href = "/";
+  }
+
+  seconds--;
+}
+
+updateTimer();
+setInterval(updateTimer,1000);
+</script>
 </body>
 </html>

@@ -35,3 +35,5 @@ function updateBreadcrumb(id) {
     current.textContent = crumbMap[id] || id;
   }
 }
+
+

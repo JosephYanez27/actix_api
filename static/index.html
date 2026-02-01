@@ -1,40 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>SoftPro Solutions</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solid Software</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="images/cub_blan.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/cub_blan.png">
+    
+    <link rel="apple-touch-icon" href="images/cub_blan.png">
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav class="menu">
-  <div class="logo">SoftPro</div>
+  <div class="menu-container">
+    <div class="logo-box">
+      <img src="images/sl.png" alt="Solid Software">
+    </div>
 
-  <div class="menu-links">
-    <a href="index.html">Inicio</a>
-    <a href="services.html">Servicios</a>
-    <a href="about.html">Nosotros</a>
-    <a href="contact.html">Contacto</a>
+    <ul class="menu-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="services.html">Servicios</a></li>
+      <li><a href="about.html">Nosotros</a></li>
+      <li><a href="contact.html">Contacto</a></li>
+    </ul>
   </div>
 </nav>
+
 <nav class="breadcrumbs">
   <span>Inicio</span>
 </nav>
 
 
 
-<section  id="index" class="section active">
-<h1>Soluciones de Software a Medida</h1>
-<p>Desarrollamos sistemas web, móviles y APIs modernas.</p>
+<section id="index" class="section active">
 
-<div class="carousel">
-  <div id="carouselTrack" class="carousel-track"></div>
-  <div class="carousel-dots"></div>
-  <button onclick="openFile()">➕ Agregar</button>
-  <input type="file" id="fileInput" accept="image/*" hidden>
+  <div class="left-content">
 
-</div>
+    <div class="hero-content">
+      <h1>Soluciones de Software a Medida</h1>
+      <p>Desarrollamos sistemas web, móviles y APIs modernas.</p>
+    </div>
+
+    <div class="carousel">
+      <div id="carouselTrack" class="carousel-track"></div>
+      <div class="carousel-dots"></div>
+
+      <button onclick="openFile()" class="btn-glass-neon">
+        <span>+</span> Agregar Imagen
+      </button>
+
+      <input type="file" id="fileInput" accept="image/*" hidden>
+    </div>
+
+  </div>
+
+  <!-- Robot -->
+  <div class="robot-container">
+    <spline-viewer 
+      class="robot-3d" 
+      url="https://prod.spline.design/zWrQ7l9ji0Vekx53/scene.splinecode">
+    </spline-viewer>
+  </div>
+
 </section>
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.46/build/spline-viewer.js"></script>
 <script src="carousel.js"></script>
 <script src="upload.js"></script>
 <script src="breadcrumbs.js"></script>
