@@ -1,6 +1,9 @@
 const track = document.getElementById("carouselTrack");
 const input = document.getElementById("fileInput");
 
+let currentIndex = 0;
+let images = [];
+
 function openFile() {
   input.click();
 }
@@ -9,14 +12,12 @@ input.addEventListener("change", async () => {
   const file = input.files[0];
   if (!file) return;
 
-  // ✅ VALIDAR QUE SEA IMAGEN
   if (!file.type.startsWith("image/")) {
-    alert("❌ Solo se permiten imágenes (jpg, png, webp, etc)");
-    input.value = ""; // reset
+    alert("❌ Solo se permiten imágenes");
+    input.value = "";
     return;
   }
 
-  // (opcional) límite de tamaño 5MB
   const maxSize = 5 * 1024 * 1024;
   if (file.size > maxSize) {
     alert("❌ Imagen muy grande (máx 5MB)");
@@ -42,6 +43,7 @@ input.addEventListener("change", async () => {
 
 async function loadImages() {
   track.innerHTML = "";
+  images = [];
 
   const res = await fetch("/carousel/list");
   if (!res.ok) return;
@@ -52,13 +54,38 @@ async function loadImages() {
     const img = document.createElement("img");
     img.src = `/carousel/image/${id}`;
     track.appendChild(img);
+    images.push(img);
   });
 
-  // 🔄 avisar al carrusel
-  document.dispatchEvent(new Event("carousel:loaded"));
+  currentIndex = 0;
+  updateCarousel();
 }
 
+function updateCarousel() {
+  const width = track.clientWidth;
+  track.style.transform = `translateX(-${currentIndex * width}px)`;
+}
+
+/* AUTO SLIDE */
+
+setInterval(() => {
+  if (images.length === 0) return;
+
+  currentIndex++;
+
+  if (currentIndex >= images.length) {
+    currentIndex = 0;
+  }
+
+  updateCarousel();
+}, 3500);
+
+/* REAJUSTE AL REDIMENSIONAR */
+
+window.addEventListener("resize", updateCarousel);
+
 loadImages();
+
 
 window.addEventListener("load", () => {
   document.getElementById("robot").innerHTML = `
