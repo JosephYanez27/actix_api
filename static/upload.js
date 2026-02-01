@@ -59,3 +59,12 @@ async function loadImages() {
 }
 
 loadImages();
+
+window.addEventListener("load", () => {
+  document.getElementById("robot").innerHTML = `
+   <spline-viewer class="robot-3d"
+   url="https://prod.spline.design/zWrQ7l9ji0Vekx53/scene.splinecode">
+   </spline-viewer>
+  `;
+});
+
