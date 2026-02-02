@@ -2,12 +2,8 @@ let index = 0;
 let images = [];
 let dots = [];
 
-const track = document.getElementById("carouselTrack");
 const dotsContainer = document.querySelector(".carousel-dots");
 
-/* ===========================
-   Construir dots
-=========================== */
 function buildDots() {
   dotsContainer.innerHTML = "";
   dots = [];
@@ -24,23 +20,18 @@ function buildDots() {
   });
 }
 
-/* ===========================
-   Mostrar slide
-=========================== */
 function showSlide(i) {
   if (!images.length) return;
 
-  const slideWidth = images[0].clientWidth;
-  track.style.transform = `translateX(-${i * slideWidth}px)`;
-
+  images.forEach(img => img.classList.remove("active"));
   dots.forEach(dot => dot.classList.remove("active"));
+
+  images[i].classList.add("active");
   dots[i]?.classList.add("active");
 }
 
-/* ===========================
-   Inicializar carrusel
-=========================== */
-function initCarousel() {
+// Esperamos a que upload.js cargue las imágenes
+document.addEventListener("carousel:loaded", () => {
   images = document.querySelectorAll("#carouselTrack img");
 
   if (!images.length) return;
@@ -48,26 +39,11 @@ function initCarousel() {
   index = 0;
   buildDots();
   showSlide(index);
-}
+});
 
-/* ===========================
-   Esperar DOM
-=========================== */
-window.addEventListener("load", initCarousel);
-
-/* ===========================
-   Auto-slide
-=========================== */
+// Auto-slide seguro
 setInterval(() => {
   if (!images.length) return;
-
   index = (index + 1) % images.length;
   showSlide(index);
 }, 4000);
-
-/* ===========================
-   Resize
-=========================== */
-window.addEventListener("resize", () => {
-  showSlide(index);
-});
