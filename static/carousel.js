@@ -2,7 +2,6 @@ let index = 0;
 let images = [];
 let dots = [];
 
-const track = document.getElementById("carouselTrack");
 const dotsContainer = document.querySelector(".carousel-dots");
 
 function buildDots() {
@@ -14,24 +13,24 @@ function buildDots() {
     dot.className = "dot";
     dot.addEventListener("click", () => {
       index = i;
-      moveSlide();
+      showSlide(index);
     });
     dotsContainer.appendChild(dot);
     dots.push(dot);
   });
 }
 
-function moveSlide() {
+function showSlide(i) {
   if (!images.length) return;
 
-  const slideWidth = images[0].clientWidth;
-  track.style.transform = `translateX(-${index * slideWidth}px)`;
-
+  images.forEach(img => img.classList.remove("active"));
   dots.forEach(dot => dot.classList.remove("active"));
-  dots[index]?.classList.add("active");
+
+  images[i].classList.add("active");
+  dots[i]?.classList.add("active");
 }
 
-// Cuando se cargan imágenes desde backend
+// Esperamos a que upload.js cargue las imágenes
 document.addEventListener("carousel:loaded", () => {
   images = document.querySelectorAll("#carouselTrack img");
 
@@ -39,12 +38,12 @@ document.addEventListener("carousel:loaded", () => {
 
   index = 0;
   buildDots();
-  moveSlide();
+  showSlide(index);
 });
 
-// Auto slide
+// Auto-slide seguro
 setInterval(() => {
   if (!images.length) return;
   index = (index + 1) % images.length;
-  moveSlide();
+  showSlide(index);
 }, 4000);
