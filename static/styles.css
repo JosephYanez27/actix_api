@@ -419,8 +419,8 @@ header{
   right: -5%;
   top: 50%;
   transform: translateY(-50%);
-  width: 520px;
-  height: 520px;
+  width: 1520px;
+  height: 1520px;
   z-index: 1;
   pointer-events: none;
 }
@@ -646,8 +646,5 @@ header{
   transition:.3s;
 }
 
-.dot.active{
-  background:#38bdf8;
-  transform:scale(1.2);
-}
+
 

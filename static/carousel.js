@@ -2,8 +2,12 @@ let index = 0;
 let images = [];
 let dots = [];
 
+const track = document.getElementById("carouselTrack");
 const dotsContainer = document.querySelector(".carousel-dots");
 
+/* ===========================
+   Construir dots
+=========================== */
 function buildDots() {
   dotsContainer.innerHTML = "";
   dots = [];
@@ -20,17 +24,25 @@ function buildDots() {
   });
 }
 
+/* ===========================
+   Mostrar slide
+=========================== */
 function showSlide(i) {
   if (!images.length) return;
 
-  images.forEach(img => img.classList.remove("active"));
-  dots.forEach(dot => dot.classList.remove("active"));
+  const slideWidth = images[0].offsetWidth;
 
-  images[i].classList.add("active");
+  // mover el track
+  track.style.transform = `translateX(-${i * slideWidth}px)`;
+
+  // actualizar dots
+  dots.forEach(dot => dot.classList.remove("active"));
   dots[i]?.classList.add("active");
 }
 
-// Esperamos a que upload.js cargue las imágenes
+/* ===========================
+   Cuando las imágenes cargan
+=========================== */
 document.addEventListener("carousel:loaded", () => {
   images = document.querySelectorAll("#carouselTrack img");
 
@@ -41,9 +53,19 @@ document.addEventListener("carousel:loaded", () => {
   showSlide(index);
 });
 
-// Auto-slide seguro
+/* ===========================
+   Auto-slide
+=========================== */
 setInterval(() => {
   if (!images.length) return;
+
   index = (index + 1) % images.length;
   showSlide(index);
 }, 4000);
+
+/* ===========================
+   Reajustar al cambiar tamaño
+=========================== */
+window.addEventListener("resize", () => {
+  showSlide(index);
+});
