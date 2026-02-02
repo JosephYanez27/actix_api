@@ -298,7 +298,7 @@ header{
   margin-right: auto;
   max-width: 1200px;
   width: 90%; /* Para que no toque los bordes en móviles */
-
+  position: sticky;
   /* Estilos visuales que ya tenías */
   display: flex;
   align-items: center;
@@ -419,8 +419,8 @@ header{
   right: -5%;
   top: 50%;
   transform: translateY(-50%);
-  width: 820px;
-  height: 820px;
+  width: 520px;
+  height: 520px;
   z-index: 1;
   pointer-events: none;
 }
