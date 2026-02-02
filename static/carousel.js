@@ -30,20 +30,17 @@ function buildDots() {
 function showSlide(i) {
   if (!images.length) return;
 
-  const slideWidth = images[0].offsetWidth;
-
-  // mover el track
+  const slideWidth = images[0].clientWidth;
   track.style.transform = `translateX(-${i * slideWidth}px)`;
 
-  // actualizar dots
   dots.forEach(dot => dot.classList.remove("active"));
   dots[i]?.classList.add("active");
 }
 
 /* ===========================
-   Cuando las imágenes cargan
+   Inicializar carrusel
 =========================== */
-document.addEventListener("carousel:loaded", () => {
+function initCarousel() {
   images = document.querySelectorAll("#carouselTrack img");
 
   if (!images.length) return;
@@ -51,7 +48,12 @@ document.addEventListener("carousel:loaded", () => {
   index = 0;
   buildDots();
   showSlide(index);
-});
+}
+
+/* ===========================
+   Esperar DOM
+=========================== */
+window.addEventListener("load", initCarousel);
 
 /* ===========================
    Auto-slide
@@ -64,7 +66,7 @@ setInterval(() => {
 }, 4000);
 
 /* ===========================
-   Reajustar al cambiar tamaño
+   Resize
 =========================== */
 window.addEventListener("resize", () => {
   showSlide(index);
