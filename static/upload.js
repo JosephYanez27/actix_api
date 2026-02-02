@@ -57,7 +57,6 @@ async function loadImages() {
   // 🔄 avisar al carrusel
   document.dispatchEvent(new Event("carousel:loaded"));
 }
-
 loadImages();
 
 window.addEventListener("load", () => {

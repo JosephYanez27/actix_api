@@ -612,7 +612,7 @@ header{
 
 /* cada imagen */
 .carousel-track img{
-  display: none;
+  
   width: 340px;
   flex-shrink: 0;
   object-fit: cover;
@@ -631,9 +631,6 @@ header{
   justify-content:center;
   gap:10px;
   margin-top:14px;
-}
-.carousel-track img.active {
-  display: block;         /* ⬅️ SOLO UNA */
 }
 
 .dot{
