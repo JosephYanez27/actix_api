@@ -13,20 +13,20 @@ function buildDots(){
     const dot = document.createElement("span");
     dot.className = "dot";
 
-    dot.addEventListener("click", () => {
+    dot.onclick = () => {
       index = i;
-      updateCarousel();
-    });
+      moveCarousel();
+    };
 
     dotsContainer.appendChild(dot);
     dots.push(dot);
   });
 }
 
-function updateCarousel(){
+function moveCarousel(){
   if(!images.length) return;
 
-  const width = document.querySelector(".carousel").offsetWidth;
+  const width = document.querySelector(".carousel").clientWidth;
 
   track.style.transform = `translateX(-${index * width}px)`;
 
@@ -34,7 +34,7 @@ function updateCarousel(){
   dots[index]?.classList.add("active");
 }
 
-// cuando upload.js termina de cargar imágenes
+// Cuando backend termina de traer imágenes
 document.addEventListener("carousel:loaded", () => {
 
   images = document.querySelectorAll("#carouselTrack img");
@@ -43,14 +43,14 @@ document.addEventListener("carousel:loaded", () => {
 
   index = 0;
   buildDots();
-  updateCarousel();
+  moveCarousel();
 });
 
-// auto slide
+// Auto slide
 setInterval(() => {
   if(!images.length) return;
 
   index = (index + 1) % images.length;
-  updateCarousel();
+  moveCarousel();
 
 }, 4000);
