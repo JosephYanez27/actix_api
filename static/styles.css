@@ -593,58 +593,15 @@ header{
 /* ===========================
   Index   CARRUSEL
 =========================== */
-.carousel{
-  width: 340px;
-  position: relative;
-    margin-top: 40px;
-  z-index: 2;
-}
-
-/* ventana */
-.carousel-track-wrapper{
-  overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.1);
-}
-
-/* fila */
 .carousel-track{
-  display: flex;
-  transition: transform .8s cubic-bezier(.4,0,.2,1);
-}
-
-/* cada imagen */
-.carousel-track img{
-  
-  width: 340px;
-  height: 420px;
-  flex-shrink: 0;
-  object-fit: cover;
-  border-radius: 16px;
-}
-
-/* hover bonito */
-.carousel-track img:hover{
-  transform: scale(1.05);
-}
-
-/* dots */
-
-.carousel-dots{
   display:flex;
-  justify-content:center;
-  gap:10px;
-  margin-top:14px;
+  transition: transform .8s ease;
 }
 
-.dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#475569;
-  cursor:pointer;
-  transition:.3s;
+.carousel-track-wrapper{
+  overflow:hidden;
 }
+
 
 
 
