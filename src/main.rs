@@ -54,34 +54,34 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
-    HttpServer::new(move || {
-        App::new()
-            .app_data(web::Data::new(pool.clone()))
+HttpServer::new(move || {
+    App::new()
+        .app_data(web::Data::new(pool.clone()))
 
-            .service(health)
+        .service(health)
 
-            // 📌 APIs
-            .service(save_contact)
-            .service(upload_image)
-            .service(list_images)
-            .service(get_image)
+        // 📌 APIs
+        .service(save_contact)
+        .service(upload_image)
+        .service(list_images)
+        .service(get_image)
 
-            // 📂 archivos estáticos
-            .service(Files::new("/images", "./static/images"))
-            .service(Files::new("/", "./static").index_file("index.html"))
+        // 🧩 favicon (ANTES)
+        .service(web::resource("/favicon.ico").to(favicon))
 
-            // 🧩 favicon
-            .service(web::resource("/favicon.ico").to(favicon))
+        // 📂 archivos estáticos
+        .service(Files::new("/images", "./static/images"))
+        .service(Files::new("/", "./static").index_file("index.html"))
 
-            // 🚑 pantalla de error
-            .default_service(
-                web::route().to(|| async {
-                    HttpResponse::Found()
-                        .append_header(("Location", "/error.html"))
-                        .finish()
-                }),
-            )
-    })
+        // 🚑 fallback
+        .default_service(
+            web::route().to(|| async {
+                HttpResponse::Found()
+                    .append_header(("Location", "/error.html"))
+                    .finish()
+            }),
+        )
+})
     .bind(("0.0.0.0", port))?
     .run()
     .await
