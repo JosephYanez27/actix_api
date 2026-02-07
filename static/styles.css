@@ -404,6 +404,7 @@ header{
   min-height: 90vh;
   padding: 0 6%;
   overflow: hidden;
+  z-index: 1;
 }
 
 .hero-content{
@@ -421,9 +422,10 @@ header{
   transform: translateY(-50%);
   width: 820px;
   height: 820px;
-  z-index: 1;
+  z-index: 20; /* 🔥 CAMBIO CLAVE */
   pointer-events: none;
 }
+
 
 
 .robot-3d{
