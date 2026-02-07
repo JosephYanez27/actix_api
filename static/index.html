@@ -73,8 +73,6 @@
 <script src="robot.js"></script>
 <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.46/build/spline-viewer.js"></script>
 <script src="carousel.js"></script>
-
-<script src="upload.js"></script>
 <script src="breadcrumbs.js"></script>
 
 <script>
@@ -91,14 +89,6 @@ function showSection(id) {
 
   // 🧭 actualizar breadcrumb
   updateBreadcrumb(id);
-}
-</script>
-<script>
-function showSection(id) {
-  document.querySelectorAll(".section")
-    .forEach(s => s.classList.remove("active"));
-
-  document.getElementById(id).classList.add("active");
 }
 </script>
 </body>
