@@ -11,6 +11,7 @@
     <link rel="apple-touch-icon" href="images/cub_blan.png">
 
     <link rel="stylesheet" href="styles.css">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.46/build/spline-viewer.js"></script>
 </head>
 <body>
 
@@ -63,15 +64,16 @@
   </div>
 
   <!-- Robot -->
-  <div class="robot-container">
-    <div id="robot"></div> 
-    
-    
-  </div>
+<div class="robot-container">
+  <spline-viewer
+    class="robot-3d"
+    url="https://prod.spline.design/zWrQ7l9ji0Vekx53/scene.splinecode">
+  </spline-viewer>
+</div>
 
 </section>
 <script src="robot.js"></script>
-<script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.46/build/spline-viewer.js"></script>
+
 <script src="carousel.js"></script>
 <script src="breadcrumbs.js"></script>
 

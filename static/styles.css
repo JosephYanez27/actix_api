@@ -641,6 +641,18 @@ header{
   transform:scale(1.2);
 }
 
+spline-viewer{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.robot-container{
+  outline: 3px solid red;
+  background: rgba(255,0,0,0.1);
+}
+
+
 
 
 
