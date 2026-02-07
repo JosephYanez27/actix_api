@@ -289,6 +289,9 @@ header{
 /* ===========================
    Bread Crums
 =========================== */
+body {
+  padding-top: 80px;
+}
 .breadcrumbs {
   position: sticky;
   top: 80px;
