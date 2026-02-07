@@ -30,29 +30,30 @@ async fn main() -> std::io::Result<()> {
 
     println!("🌐 Puerto: {port}");
 
-    let pool = match env::var("DATABASE_URL") {
-        Ok(url) => {
-            println!("🔗 Conectando DB...");
-            match PgPoolOptions::new()
-                .max_connections(5)
-                .connect(&url)
-                .await
-            {
-                Ok(p) => {
-                    println!("🗄️ DB conectada");
-                    Some(p)
-                }
-                Err(e) => {
-                    eprintln!("❌ Error DB: {e}");
-                    None
-                }
-            }
+use std::time::Duration;
+
+let pool = if let Ok(url) = env::var("DATABASE_URL") {
+    println!("🔗 Intentando conectar DB...");
+
+    match PgPoolOptions::new()
+        .max_connections(5)
+        .connect_timeout(Duration::from_secs(5))
+        .connect(&url)
+        .await
+    {
+        Ok(p) => {
+            println!("🗄️ DB conectada");
+            Some(p)
         }
-        Err(_) => {
-            println!("⚠️ DATABASE_URL no configurada");
+        Err(e) => {
+            eprintln!("❌ DB no disponible, servidor continúa: {e}");
             None
         }
-    };
+    }
+} else {
+    println!("⚠️ DATABASE_URL no configurada");
+    None
+};
 
 HttpServer::new(move || {
     App::new()
