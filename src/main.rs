@@ -5,6 +5,7 @@ use actix_files::Files;
 use actix_web::{get, web, App, HttpResponse, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
+use tokio::time::{timeout, Duration};
 
 use carousel::{upload_image, list_images, get_image};
 use contact::save_contact;
