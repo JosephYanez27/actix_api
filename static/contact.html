@@ -109,5 +109,22 @@ function showSection(id) {
   document.getElementById(id).classList.add("active");
 }
 </script>
+<script>
+const menuContainer = document.querySelector(".menu-container");
+const menu = document.querySelector(".menu-links");
+
+// Crear botón hamburguesa dinámicamente
+const toggle = document.createElement("div");
+toggle.classList.add("menu-toggle");
+toggle.innerHTML = "<span></span><span></span><span></span>";
+
+menuContainer.appendChild(toggle);
+
+// Evento
+toggle.addEventListener("click", () => {
+  menu.classList.toggle("active");
+  toggle.classList.toggle("active");
+});
+</script>
 </body>
 </html>
