@@ -27,4 +27,5 @@ COPY --from=builder /app/static ./static
 
 EXPOSE 8080
 
-CMD ["actix_api"]
+CMD ["/usr/local/bin/actix_api"]
+
