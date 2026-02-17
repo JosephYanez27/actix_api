@@ -14,7 +14,7 @@ COPY . .
 RUN cargo build --release
 
 # ---------- runtime ----------
-FROM debian:bookworm-slim
+FROM rust:latest
 
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
@@ -27,5 +27,4 @@ COPY --from=builder /app/static ./static
 
 EXPOSE 8080
 
-CMD ["/usr/local/bin/actix_api"]
-
+CMD ["actix_api"]
