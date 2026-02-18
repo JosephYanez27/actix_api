@@ -1,6 +1,11 @@
 # ---------- build ----------
 # Usamos slim para que la descarga sea rápida y menos propensa a fallos de red
-FROM rust:1.78-slim as builder
+FROM rust:1.85-slim as builder
+
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
