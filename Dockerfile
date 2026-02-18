@@ -1,6 +1,6 @@
 # ---------- build ----------
 # Usamos slim para que la descarga sea rápida y menos propensa a fallos de red
-FROM rust:1.85-slim as builder
+FROM rustlang/rust:nightly-slim as builder
 
 RUN apt-get update && apt-get install -y \
     pkg-config \
