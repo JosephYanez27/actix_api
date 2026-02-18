@@ -1,6 +1,6 @@
 # ---------- build ----------
 # Usamos slim para que la descarga sea rápida y menos propensa a fallos de red
-FROM rust:1.75-slim as builder
+FROM rust:1.78-slim as builder
 
 WORKDIR /app
 
