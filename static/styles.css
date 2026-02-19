@@ -854,10 +854,405 @@ spline-viewer{
 }
 
 
+/* --- SERVICIOS --- */
+.services-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
 
+.services-header h2 {
+    font-size: 2.5rem;
+    background: linear-gradient(to right, #fff, var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
+.services-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
 
+.service-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 30px;
+    border-radius: 20px;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
 
+.service-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-5px);
+    background: rgba(56, 189, 248, 0.05);
+}
 
+.service-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
 
+/* --- CONFIGURADOR DE STACK --- */
+.category-group {
+    margin-bottom: 40px;
+}
 
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.option {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+
+.option:hover {
+    border-color: var(--accent-purple);
+}
+
+.option.selected {
+    border-color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.1);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.selection-summary {
+    margin-top: 50px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+#project-name-input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    padding: 12px 20px;
+    border-radius: 10px;
+    color: white;
+}
+
+/* --- STACK TECNOLÓGICO & BÚSQUEDA --- */
+.search-wrapper {
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 18px 25px 18px 55px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    color: white;
+    font-size: 1.1rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #38bdf8;
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    opacity: 0.6;
+}
+
+.pill {
+    padding: 10px 22px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pill:hover, .pill.active {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+.tech-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 35px 25px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.tech-card:hover {
+    transform: translateY(-12px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Efecto de resplandor sutil al fondo de la card al hacer hover */
+.tech-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 24px;
+    background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.tech-card:hover::before {
+    opacity: 1;
+}
+
+.tech-card .icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    display: inline-block;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.tech-card:hover .icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.tech-card h3 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.tech-card p {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+/* --- CONTENEDOR DE BOTONES DE NAVEGACIÓN --- */
+.nav-buttons-container {
+    display: flex;
+    justify-content: center; /* Los centra en la pantalla */
+    align-items: center;
+    gap: 30px; /* Espacio real entre ellos para que no se amontonen */
+    padding: 60px 20px;
+    flex-wrap: wrap; /* Si la pantalla es chica, se ponen uno abajo del otro */
+}
+
+/* --- ESTILO MODERNO PARA BOTONES (btn-next y btn-primary) --- */
+.btn-next, .btn-primary, .btn-cta {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(5px);
+    text-decoration: none;
+}
+
+/* Efecto Hover: Brillo y movimiento */
+.btn-next:hover, .btn-primary:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+}
+
+/* Animación de la flechita */
+.btn-next:hover span, .btn-primary:hover span {
+    transform: translateX(5px);
+}
+
+.btn-next span, .btn-primary span {
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
+}
+
+/* Botón resaltado (¡Quiero configurar mi proyecto!) */
+.btn-highlight {
+    background: linear-gradient(135deg, #38bdf8, #a855f7);
+    border: none;
+    color: #0f172a; /* Texto oscuro para contrastar con el brillo */
+}
+
+.btn-highlight:hover {
+    background: linear-gradient(135deg, #7dd3fc, #c084fc);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+#configurador-stack {
+    padding: 40px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    color: white;
+}
+
+#configurador-stack h2 {
+    text-align: center;
+    color: var(--accent-blue, #38bdf8);
+    margin-bottom: 10px;
+}
+
+#configurador-stack p {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 40px;
+}
+
+/* Contenedor principal de categorías */
+.stack-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.category-group h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #e2e8f0;
+    border-left: 4px solid var(--accent-purple, #a855f7);
+    padding-left: 15px;
+}
+
+/* Grid de opciones - AQUÍ SE CORRIGE EL DESFASE */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.option {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center; /* Alineación vertical perfecta */
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.option .icon {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Ancho fijo para el icono evita que el texto se mueva */
+}
+
+.option span:not(.icon) {
+    font-weight: 500;
+    white-space: nowrap; /* Evita que el texto salte de línea y desface la caja */
+}
+
+/* Estado Seleccionado */
+.option.selected {
+    border-color: var(--accent-blue, #38bdf8);
+    background: rgba(56, 189, 248, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.option:hover:not(.selected) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Resumen y Botón */
+.selection-summary {
+    margin-top: 50px;
+    padding: 30px;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#project-name-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: white;
+    outline: none;
+}
+
+#project-name-input:focus {
+    border-color: var(--accent-blue, #38bdf8);
+}
+.tech-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.2));
+    transition: transform 0.3s ease;
+}
+
+/* Espaciado dentro de la opción */
+.option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+}
+
+/* Efecto hover en el logo */
+.option:hover .tech-logo {
+    transform: scale(1.15) rotate(5deg);
+}

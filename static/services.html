@@ -32,39 +32,360 @@
 </nav>
 </nav>
 <nav class="breadcrumbs">
-  <a href="index.html">Inicio</a>
+  <a href="#" onclick="showSection('inicio')">Inicio</a>
   <span>›</span>
-  <span>Servicios</span>
+  <span id="current-breadcrumb">Servicios</span>
 </nav>
 
+<section id="services" class="section active">
+  <div class="services-header">
+    <h2>Nuestros Servicios</h2>
+    <p>Soluciones integrales de software con alto rendimiento.</p>
+  </div>
+  
+  <div class="services-container">
+    <div class="service-card">
+      <div class="service-icon">🌐</div>
+      <h3>Desarrollo Web</h3>
+      <p>Aplicaciones modernas, rápidas y escalables para cualquier navegador.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔐</div>
+      <h3>APIs Seguras</h3>
+      <p>Arquitecturas robustas con autenticación avanzada y alto tráfico.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">📱</div>
+      <h3>Apps Android</h3>
+      <p>Experiencias móviles nativas y multiplataforma optimizadas.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🗄️</div>
+      <h3>Bases de Datos</h3>
+      <p>Diseño y optimización de estructuras SQL y NoSQL.</p>
+    </div>
+  </div>
+</section>
+<div class="nav-buttons-container">
+    <button class="btn-next" onclick="showSection('technologies')">
+        Explorar Tecnologías <span>➔</span>
+    </button>
+    
+    <button class="btn-primary btn-highlight" onclick="showSection('configurador-stack')">
+        ¡Quiero configurar mi proyecto! <span>➔</span>
+    </button>
+</div>
+<section id="configurador-stack" class="section">
+    <h2>Configura tu Proyecto Solid</h2>
+    <p>Selecciona una tecnología de cada categoría para armar tu stack.</p>
 
+    <div class="stack-selector">
+        <div class="stack-selector">
+    <div class="category-group" data-category="web">
+        <h3>1. Frontend / Web</h3>
+        <div class="options-grid">
+            <div class="option" data-value="React" data-name="React">
+                <img src="https://cdn.simpleicons.org/react/61DAFB" class="tech-logo" alt="React">
+                <span>React</span>
+            </div>
+            <div class="option" data-value="Angular" data-name="Angular">
+                <img src="https://cdn.simpleicons.org/angular/DD0031" class="tech-logo" alt="Angular">
+                <span>Angular</span>
+            </div>
+            <div class="option" data-value="NextJS" data-name="Next.js">
+                <img src="https://cdn.simpleicons.org/nextdotjs/white" class="tech-logo" alt="Next.js">
+                <span>Next.js</span>
+            </div>
+        </div>
+    </div>
 
-<section id ="services" class="section active">
-<h2>Servicios</h2>
+    <div class="category-group" data-category="movil">
+        <h3>2. App Móvil</h3>
+        <div class="options-grid">
+            <div class="option" data-value="Flutter" data-name="Flutter">
+                <img src="https://cdn.simpleicons.org/flutter/02569B" class="tech-logo" alt="Flutter">
+                <span>Flutter</span>
+            </div>
+            <div class="option" data-value="Swift" data-name="Swift">
+                <img src="https://cdn.simpleicons.org/swift/F05138" class="tech-logo" alt="Swift">
+                <span>Swift</span>
+            </div>
+            <div class="option" data-value="Kotlin" data-name="Kotlin">
+                <img src="https://cdn.simpleicons.org/kotlin/7F52FF" class="tech-logo" alt="Kotlin">
+                <span>Kotlin</span>
+            </div>
+        </div>
+    </div>
 
-<ul>
-  <li>✔ Desarrollo Web</li>
-  <li>✔ APIs seguras</li>
-  <li>✔ Apps Android</li>
-  <li>✔ Bases de datos</li>
-</ul>
+    <div class="category-group" data-category="api">
+        <h3>3. Backend / API</h3>
+        <div class="options-grid">
+            <div class="option" data-value="Actix" data-name="Actix Web">
+                <img src="https://cdn.simpleicons.org/rust/white" class="tech-logo" alt="Actix">
+                <span>Actix Web</span>
+            </div>
+            <div class="option" data-value="DotNet" data-name=".NET">
+                <img src="https://cdn.simpleicons.org/dotnet/512BD4" class="tech-logo" alt=".NET">
+                <span>.NET</span>
+            </div>
+            <div class="option" data-value="NodeJS" data-name="Node.js">
+                <img src="https://cdn.simpleicons.org/nodedotjs/339933" class="tech-logo" alt="Node.js">
+                <span>Node.js</span>
+            </div>
+            <div class="option" data-value="Go" data-name="Go">
+                <img src="https://cdn.simpleicons.org/go/00ADD8" class="tech-logo" alt="Go">
+                <span>Go</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-group" data-category="base">
+        <h3>4. Base de Datos</h3>
+        <div class="options-grid">
+            <div class="option" data-value="Postgres" data-name="PostgreSQL">
+                <img src="https://cdn.simpleicons.org/postgresql/4169E1" class="tech-logo" alt="PostgreSQL">
+                <span>PostgreSQL</span>
+            </div>
+            <div class="option" data-value="MongoDB" data-name="MongoDB">
+                <img src="https://cdn.simpleicons.org/mongodb/47A248" class="tech-logo" alt="MongoDB">
+                <span>MongoDB</span>
+            </div>
+            <div class="option" data-value="MySQL" data-name="MySQL">
+                <img src="https://cdn.simpleicons.org/mysql/4479A1" class="tech-logo" alt="MySQL">
+                <span>MySQL</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="selection-summary">
+        <input type="text" id="project-name-input" placeholder="Nombre de tu proyecto..." required>
+        <button id="send-stack-btn" class="btn-primary" disabled>Guardar Configuración</button>
+    </div>
+</section>
+
+<section id="technologies" class="section">
+  <h2>Stack Tecnológico</h2>
+  
+  <div class="search-wrapper">
+    <div class="search-box">
+      <input type="text" id="techSearch" placeholder="Ej: 'seguridad', 'backend', 'apple'..." onkeyup="smartSearch()">
+      <span class="search-icon">🔍</span>
+    </div>
+    <div class="filter-pills">
+      <button class="pill" onclick="filterCategory('all')">Todos</button>
+      <button class="pill" onclick="filterCategory('web')">Web / Backend</button>
+      <button class="pill" onclick="filterCategory('movil')">Mobile</button>
+      <button class="pill" onclick="filterCategory('base')">Datos</button>
+    </div>
+  </div>
+
+  <div class="tech-grid" id="techGrid">
+    <div class="tech-card" data-category="web" data-name="rust" data-desc="backend alto rendimiento seguridad memoria actix">
+      <span class="icon">🦀</span>
+      <h3>Rust</h3>
+      <p>Ideal para sistemas críticos y backend de alta seguridad.</p>
+    </div>
+    <div class="tech-card" data-category="web" data-name="javascript" data-desc="frontend interactividad web react vue angular">
+      <span class="icon">🌐</span>
+      <h3>JavaScript</h3>
+      <p>Ecosistema dinámico para interfaces modernas y web interactiva.</p>
+    </div>
+    <div class="tech-card" data-category="web" data-name="typescript" data-desc="tipado robusto escalabilidad web segura">
+      <span class="icon">🔷</span>
+      <h3>TypeScript</h3>
+      <p>JavaScript con superpoderes de tipado para evitar errores.</p>
+    </div>
+    <div class="tech-card" data-category="movil" data-name="dart" data-desc="flutter multiplataforma ios android ui">
+      <span class="icon">🎯</span>
+      <h3>Dart / Flutter</h3>
+      <p>Desarrollo híbrido para Android e iOS con un solo código.</p>
+    </div>
+    <div class="tech-card" data-category="movil" data-name="swift" data-desc="apple iphone ipad ios nativo">
+      <span class="icon">🍎</span>
+      <h3>Swift</h3>
+      <p>Lenguaje nativo para el ecosistema Apple de alta eficiencia.</p>
+    </div>
+    <div class="tech-card" data-category="movil" data-name="kotlin" data-desc="android nativo google mobile">
+      <span class="icon">🤖</span>
+      <h3>Kotlin</h3>
+      <p>El estándar moderno para aplicaciones Android nativas.</p>
+    </div>
+
+    <div class="tech-card" data-category="base" data-name="postgresql" data-desc="sql datos relacional persistencia">
+      <span class="icon">🐘</span>
+      <h3>PostgreSQL</h3>
+      <p>La base de datos relacional más avanzada del mundo.</p>
+    </div>
+    <div class="tech-card" data-category="base" data-name="mongodb" data-desc="nosql flexiblidad documentos json">
+      <span class="icon">🍃</span>
+      <h3>MongoDB</h3>
+      <p>Base de datos no relacional para escalabilidad rápida.</p>
+    </div>
+ 
+  <div class="tech-card" data-category="web" data-name="react" data-desc="frontend ui componentes web spa interactividad">
+  <span class="icon">⚛️</span>
+  <h3>React</h3>
+  <p>Creación de interfaces de usuario modulares y dinámicas.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="tailwind" data-desc="css diseño estilos frontend responsive rapidez">
+  <span class="icon">🎨</span>
+  <h3>Tailwind CSS</h3>
+  <p>Estilizado moderno basado en utilidades para diseños únicos.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="docker" data-desc="contenedores despliegue devops infraestructura nube">
+  <span class="icon">🐳</span>
+  <h3>Docker</h3>
+  <p>Empaquetado y despliegue consistente en cualquier entorno.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="go" data-desc="backend google concurrencia rapidez microservicios">
+  <span class="icon">🐹</span>
+  <h3>Go (Golang)</h3>
+  <p>Lenguaje eficiente para microservicios y sistemas distribuidos.</p>
+</div>
+
+<div class="tech-card" data-category="movil" data-name="java" data-desc="android nativo mobile legacy">
+  <span class="icon">☕</span>
+  <h3>Java</h3>
+  <p>Sólido para el mantenimiento de apps Android empresariales.</p>
+</div>
+
+<div class="tech-card" data-category="movil" data-name="react native" data-desc="ios android multiplataforma javascript mobile">
+  <span class="icon">📱</span>
+  <h3>React Native</h3>
+  <p>Desarrollo móvil multiplataforma con rendimiento casi nativo.</p>
+</div>
+
+<div class="tech-card" data-category="base" data-name="redis" data-desc="cache velocidad datos nosql backend">
+  <span class="icon">⚡</span>
+  <h3>Redis</h3>
+  <p>Almacenamiento en memoria para caché y alto rendimiento.</p>
+</div>
+
+<div class="tech-card" data-category="base" data-name="aws" data-desc="nube cloud amazon servidores despliegue">
+  <span class="icon">☁️</span>
+  <h3>AWS</h3>
+  <p>Infraestructura en la nube escalable y servicios globales.</p>
+</div>
+<div class="tech-card" data-category="base" data-name="mysql" data-desc="base de datos relacional sql estructurada servidor backend">
+  <span class="icon">🐬</span>
+  <h3>MySQL</h3>
+  <p>El estándar de la industria para aplicaciones web escalables y robustas.</p>
+</div>
+
+<div class="tech-card" data-category="base" data-name="sqlite" data-desc="base de datos local ligera sql archivo mobile rust">
+  <span class="icon">📦</span>
+  <h3>SQLite</h3>
+  <p>Base de datos ligera basada en archivos, ideal para apps móviles y desarrollo local.</p>
+</div>
+
+<div class="tech-card" data-category="base" data-name="sql server" data-desc="microsoft sql relacional enterprise datos seguridad">
+  <span class="icon">🗄️</span>
+  <h3>SQL Server</h3>
+  <p>Potente motor de base de datos de Microsoft para entornos empresariales de alto nivel.</p>
+</div>
+<div class="tech-card" data-category="web" data-name="angular" data-desc="frontend google typescript enterprise spa componentes">
+  <span class="icon">🅰️</span>
+  <h3>Angular</h3>
+  <p>Framework robusto de Google para aplicaciones empresariales de gran escala.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="nextjs" data-desc="react framework ssr seo renderizado optimizacion frontend">
+  <span class="icon">🚀</span>
+  <h3>Next.js</h3>
+  <p>El estándar de React para aplicaciones con SEO optimizado y renderizado híbrido.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="astro" data-desc="islas frontend velocidad rendimiento contenido estatico">
+  <span class="icon">🧑‍🚀</span>
+  <h3>Astro</h3>
+  <p>Framework ultra rápido enfocado en el rendimiento y entrega de contenido estático.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="actix-web" data-desc="rust backend servidor api rapidez concurrencia seguridad">
+  <span class="icon">⚡</span>
+  <h3>Actix Web</h3>
+  <p>Framework de Rust extremadamente veloz para APIs de alto rendimiento y seguridad.</p>
+</div>
+
+<div class="tech-card" data-category="web" data-name="express" data-desc="nodejs javascript backend api servidor ligero">
+  <span class="icon">📦</span>
+  <h3>Express.js</h3>
+  <p>Minimalismo y flexibilidad para crear servidores rápidos con Node.js.</p>
+</div>
+ </div>
 </section>
 <script src="breadcrumbs.js"></script>
+<script src="projects.js"></script>
 
 <script>
+// 1. Lógica de Secciones y Breadcrumbs
 function showSection(id) {
-
-  document.querySelectorAll(".section")
-    .forEach(s => s.classList.remove("active"));
-
+  // Ocultar todas las secciones
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  
+  // Mostrar la seleccionada
   const section = document.getElementById(id);
+  if (section) {
+    section.classList.add("active");
+    updateBreadcrumb(id);
+  }
+}
 
-  if (!section) return;
+function updateBreadcrumb(id) {
+  const breadcrumbSpan = document.querySelector(".breadcrumbs span:last-child");
+  // Mapeo de IDs a nombres legibles
+  const names = {
+    'services': 'Servicios',
+    'technologies': 'Tecnologías',
+    'configurador-stack': 'Configurador de Proyectos',
+    'about': 'Nosotros'
+  };
+  breadcrumbSpan.innerText = names[id] || id;
+}
 
-  section.classList.add("active");
+// 2. Filtro por Categoría (Botones)
+function filterCategory(cat) {
+  const items = document.querySelectorAll('.tech-item');
+  items.forEach(item => {
+    if (cat === 'all' || item.getAttribute('data-category') === cat) {
+      item.classList.remove('hidden');
+    } else {
+      item.classList.add('hidden');
+    }
+  });
+}
 
-  // 🧭 actualizar breadcrumb
-  updateBreadcrumb(id);
+function smartSearch() {
+  const query = document.getElementById('techSearch').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.tech-card');
+  let foundAny = false;
+
+  cards.forEach(card => {
+    const name = card.getAttribute('data-name').toLowerCase();
+    const desc = card.getAttribute('data-desc').toLowerCase();
+    const title = card.querySelector('h3').innerText.toLowerCase();
+
+    // El buscador ahora es "inteligente": busca coincidencias parciales en todo el texto
+    if (name.includes(query) || desc.includes(query) || title.includes(query)) {
+      card.style.display = "block";
+      card.style.opacity = "1";
+      card.style.transform = "scale(1)";
+      foundAny = true;
+    } else {
+      card.style.display = "none";
+      card.style.opacity = "0";
+      card.style.transform = "scale(0.9)";
+    }
+  });
+
+  // Si no encuentra nada, puedes mostrar un mensaje opcional
+  const grid = document.getElementById('techGrid');
+  if (!foundAny && query !== "") {
+    console.log("No se encontraron coincidencias");
+  }
 }
 </script>
 <script>

@@ -1,5 +1,6 @@
 mod contact;
 mod carousel;
+mod projects;
 
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, middleware::Logger};
@@ -62,6 +63,9 @@ async fn main() -> std::io::Result<()> {
             .service(upload_image)
             .service(list_images)
             .service(get_image)
+            .service(projects::list_projects)
+            .service(projects::create_project)
+            .service(projects::delete_project)
             .service(Files::new("/images", "./static/images"))
             .service(Files::new("/", "./static").index_file("index.html"))
             .default_service(web::route().to(|| async {
