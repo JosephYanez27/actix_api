@@ -38,7 +38,8 @@ async function saveProject(event) {
     const nameInput = document.getElementById('project-name-input').value.trim();
     
     // SEGURIDAD: Prevenir Inyección SQL básica (Sanitización)
-    const sanitizedName = nameInput.replace(/['";\-\-]/g, "");
+ // La forma correcta de escribirlo para que no dé error de rango:
+const sanitizedName = nameInput.replace(/['";\-\-]/g, "");
 
     if (!sanitizedName) {
         alert("Por favor, ingresa un nombre válido.");
