@@ -4,14 +4,19 @@ let filteredProjects = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 
-// --- 1. INICIALIZACIÓN ---
-document.addEventListener('DOMContentLoaded', () => {
-    loadProjects();
-    
-    // Vincular el botón de guardado manualmente si no tiene onclick en el HTML
-    const saveBtn = document.getElementById('send-stack-btn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', saveProject);
+// Agrega esto dentro de tu DOMContentLoaded
+document.addEventListener('click', (e) => {
+    const option = e.target.closest('.option');
+    if (option) {
+        const categoryGroup = option.closest('.category-group');
+        if (categoryGroup) {
+            // Deseleccionar otros en la misma categoría
+            categoryGroup.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            // Seleccionar el actual
+            option.classList.add('selected');
+            // Llamar a tu función de validación
+            if (typeof checkForm === 'function') checkForm();
+        }
     }
 });
 
