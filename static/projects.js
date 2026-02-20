@@ -4,60 +4,86 @@ let filteredProjects = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 
-// Agrega esto dentro de tu DOMContentLoaded
-document.addEventListener('click', (e) => {
-    const option = e.target.closest('.option');
-    if (option) {
-        const categoryGroup = option.closest('.category-group');
-        if (categoryGroup) {
-            // Deseleccionar otros en la misma categoría
-            categoryGroup.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-            // Seleccionar el actual
-            option.classList.add('selected');
-            // Llamar a tu función de validación
-            if (typeof checkForm === 'function') checkForm();
+/** * 1. FUNCIONES GLOBALES 
+ * Deben estar fuera de cualquier bloque para que el HTML (oninput) las reconozca.
+ */
+function checkForm() {
+    const nameInput = document.getElementById('project-name-input');
+    const saveBtn = document.getElementById('send-stack-btn');
+    const selectedCount = document.querySelectorAll('.option.selected').length;
+
+    if (nameInput && saveBtn) {
+        const nameValue = nameInput.value.trim();
+        // Habilitar si hay texto y 4 tecnologías seleccionadas
+        saveBtn.disabled = (selectedCount < 4 || nameValue === "");
+    }
+}
+
+function resetConfigurator() {
+    document.getElementById('projectId').value = "";
+    document.getElementById('project-name-input').value = "";
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('send-stack-btn').innerText = "Guardar Configuración";
+    checkForm();
+}
+
+/**
+ * 2. INICIALIZACIÓN DE EVENTOS
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    loadProjects();
+
+    // Manejo de clics en tecnologías (Delegación de eventos)
+    document.addEventListener('click', (e) => {
+        const option = e.target.closest('.option');
+        if (option) {
+            const categoryGroup = option.closest('.category-group');
+            if (categoryGroup) {
+                categoryGroup.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                checkForm(); // Validar después de seleccionar
+            }
         }
+    });
+
+    const saveBtn = document.getElementById('send-stack-btn');
+    if (saveBtn) {
+        saveBtn.onclick = saveProject;
     }
 });
 
-// --- 2. CRUD: CARGAR PROYECTOS ---
+/**
+ * 3. LÓGICA CRUD (CARGAR, GUARDAR, RENDERIZAR)
+ */
 async function loadProjects() {
     try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("Error en la red");
-        
         allProjects = await res.json();
         filteredProjects = allProjects;
-        renderTable(); // <--- CRÍTICO: Asegura que se dibuje la tabla al cargar
+        renderTable();
     } catch (e) { 
         console.error("Error cargando proyectos:", e);
-        // Fallback: Si la API falla, podrías cargar de LocalStorage opcionalmente
     }
 }
 
-// --- 3. CRUD: GUARDAR CON SEGURIDAD ---
 async function saveProject(event) {
-    if (event) event.preventDefault(); // Evita recarga de página
+    if (event) event.preventDefault();
 
     const id = document.getElementById('projectId').value;
     const nameInput = document.getElementById('project-name-input').value.trim();
     
-    // SEGURIDAD: Prevenir Inyección SQL básica (Sanitización)
- // La forma correcta de escribirlo para que no dé error de rango:
-const sanitizedName = nameInput.replace(/['";\-\-]/g, "");
+    // Sanitización para evitar errores de Regex y SQL
+    const sanitizedName = nameInput.replace(/['";\-\-]/g, "");
 
-    if (!sanitizedName) {
-        alert("Por favor, ingresa un nombre válido.");
-        return;
-    }
+    if (!sanitizedName) return;
 
-    // SEGURIDAD: Evitar Nombres Duplicados localmente
     const isDuplicate = allProjects.some(p => 
         p.name.toLowerCase() === sanitizedName.toLowerCase() && p.id != id
     );
 
     if (isDuplicate) {
-        alert(`¡Error! El nombre "${sanitizedName}" ya está en uso.`);
+        alert(`El nombre "${sanitizedName}" ya está en uso.`);
         return;
     }
 
@@ -77,32 +103,25 @@ const sanitizedName = nameInput.replace(/['";\-\-]/g, "");
         });
 
         if (response.ok) {
-            alert(id ? "✅ Proyecto actualizado" : "✅ Proyecto creado");
+            alert(id ? "✅ Actualizado" : "✅ Creado");
             resetConfigurator();
-            await loadProjects(); // Recargar datos y refrescar tabla
-        } else {
-            const errorData = await response.json();
-            alert("Error del servidor: " + (errorData.message || "No se pudo guardar"));
+            await loadProjects();
         }
     } catch (error) {
-        console.error("Error en la petición:", error);
-        alert("No se pudo conectar con el servidor.");
+        console.error("Error:", error);
     }
 }
 
-// --- 4. RENDERIZADO DE TABLA ---
 function renderTable() {
     const tbody = document.getElementById('projectsBody');
     if (!tbody) return;
-
     tbody.innerHTML = '';
     
-    // Paginación
     const start = (currentPage - 1) * rowsPerPage;
     const pageItems = filteredProjects.slice(start, start + rowsPerPage);
 
     if (pageItems.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay proyectos guardados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay proyectos</td></tr>';
         return;
     }
 
@@ -119,4 +138,28 @@ function renderTable() {
         `;
         tbody.appendChild(row);
     });
+}
+
+function prepareEdit(id, name, tech) {
+    document.getElementById('projectId').value = id;
+    document.getElementById('project-name-input').value = name;
+    
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    
+    const techsArray = tech.split(',').map(t => t.trim());
+    techsArray.forEach(tName => {
+        const option = document.querySelector(`.option[data-name="${tName}"]`);
+        if (option) option.classList.add('selected');
+    });
+
+    document.getElementById('send-stack-btn').innerText = "Actualizar Proyecto";
+    checkForm();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deleteProject(id) {
+    if (confirm('¿Eliminar proyecto?')) {
+        const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        if (res.ok) loadProjects();
+    }
 }
