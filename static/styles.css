@@ -741,8 +741,8 @@ spline-viewer{
   height: 100%;
   display: block;
 }
-/* --- SERVICIOS --- */
-.services-container {
+/* --- SERVICIOS (Nombres protegidos con prefijo s-) --- */
+.s-main-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 60px 20px;
@@ -782,6 +782,77 @@ spline-viewer{
 .service-icon {
     font-size: 3rem;
     margin-bottom: 20px;
+}
+
+/* --- TECH STACK INTERNO --- */
+.s-tech-stack {
+    background: rgba(255, 255, 255, 0.95); 
+    border-radius: 30px;
+    padding: 50px;
+    margin-top: 40px;
+    color: #333; 
+}
+
+.s-tech-stack .section-title {
+    -webkit-text-fill-color: #333;
+    margin-bottom: 40px;
+}
+
+.s-tech-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 30px;
+    justify-items: center;
+}
+
+.s-tech-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.s-tech-item img {
+    width: 60px;
+    height: 60px;
+    transition: transform 0.3s ease;
+}
+
+.s-tech-item span {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.s-tech-item:hover img {
+    transform: scale(1.2);
+}
+
+/* Responsivo */
+@media (max-width: 1200px) {
+    .s-tech-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+@media (max-width: 768px) {
+    .s-tech-stack {
+        padding: 35px 20px;
+        border-radius: 20px;
+    }
+
+    .s-tech-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .s-tech-item img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .s-tech-item span {
+        font-size: 0.8rem;
+    }
 }
 
 /* --- TECH STACK (Estilo imagen cargada) --- */
@@ -1255,4 +1326,229 @@ spline-viewer{
 /* Efecto hover en el logo */
 .option:hover .tech-logo {
     transform: scale(1.15) rotate(5deg);
+}
+
+
+
+
+
+
+
+
+
+
+
+/* --- TECH STACK (Nombres ajustados para no chocar) --- */
+.s-tech-stack {
+    background: rgba(255, 255, 255, 0.95); /* Fondo claro como en tu imagen */
+    border-radius: 30px;
+    padding: 50px;
+    margin-top: 40px;
+    color: #333; /* Texto oscuro para contraste */
+}
+
+.s-tech-stack .section-title {
+    -webkit-text-fill-color: #333;
+    margin-bottom: 40px;
+}
+
+.s-tech-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 30px;
+    justify-items: center;
+}
+
+.s-tech-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.s-tech-item img {
+    width: 60px;
+    height: 60px;
+    transition: transform 0.3s ease;
+}
+
+.s-tech-item span {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.s-tech-item:hover img {
+    transform: scale(1.2);
+}
+
+/* Responsivo ajustado */
+@media (max-width: 1200px) {
+    .s-tech-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+@media (max-width: 768px) {
+    .s-tech-stack {
+        padding: 35px 20px;
+        border-radius: 20px;
+    }
+
+    .s-tech-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .s-tech-item img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .s-tech-item span {
+        font-size: 0.8rem;
+    }
+}
+
+/* =========================================
+   ADMIN SECTION (TABLA Y GESTIÓN)
+   ========================================= */
+
+/* Contenedor Principal de la Tabla */
+#configurador-stack .admin-section {
+    display: block !important;
+    width: 100%;
+    max-width: 1000px;
+    /* Separación clara del configurador de arriba */
+    margin: 80px auto 40px auto !important; 
+    padding: 40px !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(56, 189, 248, 0.2) !important;
+    border-radius: 24px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    clear: both; /* Evita colisiones con flotados */
+}
+
+/* Buscador de Proyectos */
+#configurador-stack .search-input {
+    width: 100% !important;
+    max-width: 450px !important;
+    padding: 14px 20px !important;
+    margin-bottom: 35px !important;
+    background: rgba(2, 6, 23, 0.7) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    border-radius: 12px !important;
+    color: #fff !important;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#configurador-stack .search-input:focus {
+    outline: none;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+/* Contenedor de Tabla con Scroll para Móvil */
+#configurador-stack .projects-table-container {
+    width: 100% !important;
+    overflow-x: auto;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#configurador-stack table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    min-width: 700px; /* Evita que las columnas se aplasten */
+}
+
+#configurador-stack th {
+    background: rgba(56, 189, 248, 0.08) !important;
+    color: #38bdf8 !important;
+    padding: 18px 15px !important;
+    text-align: left !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.2) !important;
+}
+
+#configurador-stack td {
+    padding: 16px 15px !important;
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    font-size: 0.95rem;
+}
+
+#configurador-stack tr:hover td {
+    background: rgba(56, 189, 248, 0.04) !important;
+    color: #fff !important;
+}
+
+/* Botones de Acción (Iconos) */
+#configurador-stack .btn-edit, 
+#configurador-stack .btn-delete {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    padding: 10px !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+}
+
+#configurador-stack .btn-edit:hover { 
+    background: rgba(56, 189, 248, 0.2) !important; 
+    border-color: #38bdf8 !important;
+    transform: scale(1.1);
+}
+
+#configurador-stack .btn-delete:hover { 
+    background: rgba(239, 68, 68, 0.2) !important; 
+    border-color: #ef4444 !important;
+    transform: scale(1.1);
+}
+
+/* Paginación Estilo Premium */
+#configurador-stack .pagination-controls {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-top: 40px !important;
+}
+
+#configurador-stack .pagination-controls button {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    color: #38bdf8 !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-size: 1.3rem !important;
+    transition: all 0.3s ease;
+}
+
+#configurador-stack .pagination-controls button:hover:not(:disabled) {
+    background: #38bdf8 !important;
+    color: #020617 !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+#configurador-stack .pagination-controls button:disabled {
+    opacity: 0.2 !important;
+    cursor: not-allowed !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+#configurador-stack #pageIndicator {
+    color: #94a3b8 !important;
+    font-weight: 500;
+    margin: 0 15px;
+    font-size: 0.9rem;
 }
