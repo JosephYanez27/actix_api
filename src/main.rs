@@ -5,8 +5,8 @@ mod projects;
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, middleware::Logger};
 use sqlx::postgres::PgPoolOptions;
-use sqlx::PgPool;
 use std::env;
+use std::io::{Write}; // Para forzar el log
 
 use carousel::{upload_image, list_images, get_image};
 use contact::save_contact;
@@ -17,66 +17,66 @@ async fn health() -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Forzamos la salida de logs iniciales
+    println!("🚀 INICIANDO PROCESO DE DEPLOY...");
+    std::io::stdout().flush()?; 
 
-    println!("🚀 INICIANDO SERVIDOR...");
-
-    // Puerto (Render lo inyecta automáticamente)
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
-        .expect("PORT debe ser un número válido");
+        .expect("PORT debe ser un número");
 
-    // 🔥 OBLIGAMOS a que exista DATABASE_URL
-    let database_url = env::var("DATABASE_URL")
-        .expect("❌ DATABASE_URL no configurada en el entorno");
+    let db_url = env::var("DATABASE_URL").ok();
 
-    println!("🔗 Conectando a la base de datos...");
+    // Intentamos conectar, pero no dejamos que el error mate el hilo principal
+    let pool = if let Some(url) = db_url {
+        println!("🔗 DATABASE_URL detectada, conectando...");
+        match PgPoolOptions::new()
+            .max_connections(5)
+            .acquire_timeout(std::time::Duration::from_secs(3)) // No esperar demasiado
+            .connect(&url)
+            .await
+        {
+            Ok(p) => {
+                println!("🗄️  DB CONECTADA");
+                Some(p)
+            }
+            Err(e) => {
+                eprintln!("❌ ERROR DB (Ignorado para permitir arranque): {e}");
+                None
+            }
+        }
+    } else {
+        println!("⚠️  DATABASE_URL no configurada");
+        None
+    };
 
-    // 🔥 Si falla la conexión, la app no arranca (como debe ser en producción)
-    let pool: PgPool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await
-        .expect("❌ No se pudo conectar a la base de datos");
-
-    println!("🗄️ Base de datos conectada correctamente");
-    println!("🌐 Servidor corriendo en puerto: {}", port);
+    println!("🌐 Intentando bind en puerto: {}", port);
+    std::io::stdout().flush()?;
 
     HttpServer::new(move || {
         App::new()
-            .wrap(Logger::default())
+            .wrap(Logger::default()) // Activa logs de peticiones
             .app_data(web::Data::new(pool.clone()))
-
-            // Health check
             .route("/health", web::get().to(health))
-
-            // Contact
             .service(save_contact)
-
-            // Carousel
             .service(upload_image)
             .service(list_images)
             .service(get_image)
-
-            // Projects API
             .service(projects::list_projects)
             .service(projects::get_project)
             .service(projects::create_project)
             .service(projects::update_project)
             .service(projects::delete_project)
-
-            // Archivos estáticos
             .service(Files::new("/images", "./static/images"))
             .service(Files::new("/", "./static").index_file("index.html"))
-
-            // Ruta por defecto
             .default_service(web::route().to(|| async {
                 HttpResponse::Found()
                     .append_header(("Location", "/error.html"))
                     .finish()
             }))
     })
-    .bind(("0.0.0.0", port))?
+    .bind(("0.0.0.0", port))? // Escuchar en todas las interfaces
     .run()
     .await
 }
