@@ -62,6 +62,7 @@ async function loadProjects() {
         allProjects = await res.json();
         filteredProjects = allProjects;
         renderTable();
+updatePagination();
     } catch (e) { 
         console.error("Error cargando proyectos:", e);
     }
@@ -162,4 +163,44 @@ async function deleteProject(id) {
         const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
         if (res.ok) loadProjects();
     }
+}
+
+
+function filterProjects() {
+    const query = document
+        .getElementById("projectSearch")
+        .value.toLowerCase()
+        .trim();
+
+    filteredProjects = allProjects.filter(p =>
+        p.name.toLowerCase().includes(query)
+    );
+
+    currentPage = 1;
+    renderTable();
+    updatePagination();
+}
+
+function goToPage(type) {
+    const totalPages = Math.ceil(filteredProjects.length / rowsPerPage);
+
+    if (type === "first") currentPage = 1;
+    if (type === "prev" && currentPage > 1) currentPage--;
+    if (type === "next" && currentPage < totalPages) currentPage++;
+    if (type === "last") currentPage = totalPages;
+
+    renderTable();
+    updatePagination();
+}
+
+function updatePagination() {
+    const totalPages = Math.ceil(filteredProjects.length / rowsPerPage) || 1;
+
+    document.getElementById("pageIndicator").innerText =
+        `Página ${currentPage} de ${totalPages}`;
+
+    document.getElementById("btnPrev").disabled = currentPage === 1;
+    document.getElementById("btnFirst").disabled = currentPage === 1;
+    document.getElementById("btnNext").disabled = currentPage === totalPages;
+    document.getElementById("btnLast").disabled = currentPage === totalPages;
 }
