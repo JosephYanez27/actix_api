@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador de Stack - Solid</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+
+    <section id="configurador-stack" class="section">
+        <h2>Configura tu Proyecto Solid</h2>
+        <p>Selecciona una tecnología de cada categoría para armar tu stack.</p>
+
+        <div class="stack-selector">
+            <div class="category-group" data-category="web">
+                <h3>1. Frontend / Web</h3>
+                <div class="options-grid">
+                    <div class="option" data-value="React" data-name="React">
+                        <img src="https://cdn.simpleicons.org/react/61DAFB" class="tech-logo" alt="React">
+                        <span>React</span>
+                    </div>
+                    <div class="option" data-value="Angular" data-name="Angular">
+                        <img src="https://cdn.simpleicons.org/angular/DD0031" class="tech-logo" alt="Angular">
+                        <span>Angular</span>
+                    </div>
+                    <div class="option" data-value="NextJS" data-name="Next.js">
+                        <img src="https://cdn.simpleicons.org/nextdotjs/white" class="tech-logo" alt="Next.js">
+                        <span>Next.js</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-group" data-category="movil">
+                <h3>2. App Móvil</h3>
+                <div class="options-grid">
+                    <div class="option" data-value="Flutter" data-name="Flutter">
+                        <img src="https://cdn.simpleicons.org/flutter/02569B" class="tech-logo" alt="Flutter">
+                        <span>Flutter</span>
+                    </div>
+                    <div class="option" data-value="Swift" data-name="Swift">
+                        <img src="https://cdn.simpleicons.org/swift/F05138" class="tech-logo" alt="Swift">
+                        <span>Swift</span>
+                    </div>
+                    <div class="option" data-value="Kotlin" data-name="Kotlin">
+                        <img src="https://cdn.simpleicons.org/kotlin/7F52FF" class="tech-logo" alt="Kotlin">
+                        <span>Kotlin</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-group" data-category="api">
+                <h3>3. Backend / API</h3>
+                <div class="options-grid">
+                    <div class="option" data-value="Actix" data-name="Actix Web">
+                        <img src="https://cdn.simpleicons.org/rust/white" class="tech-logo" alt="Actix">
+                        <span>Actix Web</span>
+                    </div>
+                    <div class="option" data-value="DotNet" data-name=".NET">
+                        <img src="https://cdn.simpleicons.org/dotnet/512BD4" class="tech-logo" alt=".NET">
+                        <span>.NET</span>
+                    </div>
+                    <div class="option" data-value="NodeJS" data-name="Node.js">
+                        <img src="https://cdn.simpleicons.org/nodedotjs/339933" class="tech-logo" alt="Node.js">
+                        <span>Node.js</span>
+                    </div>
+                    <div class="option" data-value="Go" data-name="Go">
+                        <img src="https://cdn.simpleicons.org/go/00ADD8" class="tech-logo" alt="Go">
+                        <span>Go</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-group" data-category="base">
+                <h3>4. Base de Datos</h3>
+                <div class="options-grid">
+                    <div class="option" data-value="Postgres" data-name="PostgreSQL">
+                        <img src="https://cdn.simpleicons.org/postgresql/4169E1" class="tech-logo" alt="PostgreSQL">
+                        <span>PostgreSQL</span>
+                    </div>
+                    <div class="option" data-value="MongoDB" data-name="MongoDB">
+                        <img src="https://cdn.simpleicons.org/mongodb/47A248" class="tech-logo" alt="MongoDB">
+                        <span>MongoDB</span>
+                    </div>
+                    <div class="option" data-value="MySQL" data-name="MySQL">
+                        <img src="https://cdn.simpleicons.org/mysql/4479A1" class="tech-logo" alt="MySQL">
+                        <span>MySQL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="selection-summary">
+                <input type="hidden" id="projectId">
+                <input type="text" id="project-name-input" placeholder="Nombre de tu proyecto..." oninput="checkForm()">
+                <button id="send-stack-btn" class="btn-primary" onclick="saveProject()" disabled>Guardar Configuración</button>
+                <button id="cancel-edit-btn" style="display:none;" onclick="resetConfigurator()" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <input type="text" id="projectSearch" placeholder="🔍 Buscar proyecto por nombre..." onkeyup="filterProjects()" class="search-input">
+            
+            <div class="projects-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Stack Seleccionado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectsBody"></tbody>
+                </table>
+            </div>
+
+            <div class="pagination-controls">
+                <button onclick="goToPage('first')" id="btnFirst">«</button>
+                <button onclick="goToPage('prev')" id="btnPrev">‹</button>
+                <span id="pageIndicator">Página 1</span>
+                <button onclick="goToPage('next')" id="btnNext">›</button>
+                <button onclick="goToPage('last')" id="btnLast">»</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="projects.js"></script> 
+</body>
+</html>
