@@ -54,18 +54,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * 3. LÓGICA CRUD (CARGAR, GUARDAR, RENDERIZAR)
+/**
+ * 3. LÓGICA CRUD (CARGAR, GUARDAR, RENDERIZAR)
  */
 async function loadProjects() {
     try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("Error en la red");
+        
         allProjects = await res.json();
-        filteredProjects = allProjects;
+        // IMPORTANTE: Al cargar, el filtro es igual a todos
+        filteredProjects = [...allProjects]; 
+        
+        // Resetear a la página 1 al cargar datos nuevos
+        currentPage = 1; 
+        
         renderTable();
-updatePagination();
+        updatePagination(); // Asegúrate de llamar a ambos
     } catch (e) { 
         console.error("Error cargando proyectos:", e);
+        const tbody = document.getElementById('projectsBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error de conexión con el servidor</td></tr>';
     }
+}
+
+function renderTable() {
+    const tbody = document.getElementById('projectsBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    // Lógica de rebanado para paginación
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageItems = filteredProjects.slice(start, end);
+
+    if (pageItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No se encontraron proyectos</td></tr>';
+        return;
+    }
+
+    pageItems.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${p.name}</strong></td>
+            <td>${p.tech}</td>
+            <td>
+                <button class="btn-edit" onclick="prepareEdit(${p.id}, '${p.name}', '${p.tech}')">✏️</button>
+                <button class="btn-delete" onclick="deleteProject(${p.id})">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function filterProjects() {
+    const query = document.getElementById("projectSearch").value.toLowerCase().trim();
+
+    // Filtramos sobre el array original (allProjects)
+    filteredProjects = allProjects.filter(p =>
+        p.name.toLowerCase().includes(query) || 
+        p.tech.toLowerCase().includes(query) // Opcional: buscar también por tecnología
+    );
+
+    currentPage = 1; // Siempre volver a la página 1 tras filtrar
+    renderTable();
+    updatePagination();
+}
+
+function updatePagination() {
+    const totalPages = Math.ceil(filteredProjects.length / rowsPerPage) || 1;
+    const indicator = document.getElementById("pageIndicator");
+    
+    if (indicator) {
+        indicator.innerText = `Página ${currentPage} de ${totalPages}`;
+    }
+
+    // Manejo de estados de botones
+    const btnFirst = document.getElementById("btnFirst");
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
+    const btnLast = document.getElementById("btnLast");
+
+    if (btnFirst) btnFirst.disabled = (currentPage === 1);
+    if (btnPrev) btnPrev.disabled = (currentPage === 1);
+    if (btnNext) btnNext.disabled = (currentPage === totalPages || totalPages === 0);
+    if (btnLast) btnLast.disabled = (currentPage === totalPages || totalPages === 0);
 }
 
 async function saveProject(event) {
@@ -113,33 +186,7 @@ async function saveProject(event) {
     }
 }
 
-function renderTable() {
-    const tbody = document.getElementById('projectsBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    
-    const start = (currentPage - 1) * rowsPerPage;
-    const pageItems = filteredProjects.slice(start, start + rowsPerPage);
 
-    if (pageItems.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay proyectos</td></tr>';
-        return;
-    }
-
-    pageItems.forEach(p => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${p.id}</td>
-            <td><strong>${p.name}</strong></td>
-            <td>${p.tech}</td>
-            <td>
-                <button class="btn-edit" onclick="prepareEdit(${p.id}, '${p.name}', '${p.tech}')">✏️</button>
-                <button class="btn-delete" onclick="deleteProject(${p.id})">🗑️</button>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
 
 function prepareEdit(id, name, tech) {
     document.getElementById('projectId').value = id;
@@ -166,20 +213,7 @@ async function deleteProject(id) {
 }
 
 
-function filterProjects() {
-    const query = document
-        .getElementById("projectSearch")
-        .value.toLowerCase()
-        .trim();
 
-    filteredProjects = allProjects.filter(p =>
-        p.name.toLowerCase().includes(query)
-    );
-
-    currentPage = 1;
-    renderTable();
-    updatePagination();
-}
 
 function goToPage(type) {
     const totalPages = Math.ceil(filteredProjects.length / rowsPerPage);
@@ -193,17 +227,6 @@ function goToPage(type) {
     updatePagination();
 }
 
-function updatePagination() {
-    const totalPages = Math.ceil(filteredProjects.length / rowsPerPage) || 1;
-
-    document.getElementById("pageIndicator").innerText =
-        `Página ${currentPage} de ${totalPages}`;
-
-    document.getElementById("btnPrev").disabled = currentPage === 1;
-    document.getElementById("btnFirst").disabled = currentPage === 1;
-    document.getElementById("btnNext").disabled = currentPage === totalPages;
-    document.getElementById("btnLast").disabled = currentPage === totalPages;
-}
 
 
 window.goToPage = goToPage;
