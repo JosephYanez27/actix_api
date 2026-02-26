@@ -31,8 +31,8 @@ pub async fn list_projects(pool: web::Data<Option<PgPool>>) -> impl Responder {
 
 // Crear proyecto
 #[post("/api/projects")]
-pub async fn create_project(pool: web::Data<Option<PgPool>>, item: web::Json<Project>) -> impl Responder {
-    let Some(pool) = pool.get_ref() else {
+pub async fn create_project(pool: web::Data<PgPool>, item: web::Json<Project>) -> impl Responder {
+    let pool = pool.get_ref() else {
         return HttpResponse::ServiceUnavailable().finish();
     };
 
@@ -49,8 +49,8 @@ pub async fn create_project(pool: web::Data<Option<PgPool>>, item: web::Json<Pro
 
 // Eliminar proyecto
 #[delete("/api/projects/{id}")]
-pub async fn delete_project(pool: web::Data<Option<PgPool>>, id: web::Path<i32>) -> impl Responder {
-    let Some(pool) = pool.get_ref() else {
+pub async fn delete_project(pool: web::<PgPool>, id: web::Path<i32>) -> impl Responder {
+    let pool = pool.get_ref() else {
         return HttpResponse::ServiceUnavailable().finish();
     };
 
@@ -65,8 +65,8 @@ pub async fn delete_project(pool: web::Data<Option<PgPool>>, id: web::Path<i32>)
 }
 
 #[get("/api/projects/{id}")]
-pub async fn get_project(pool: web::Data<Option<PgPool>>, id: web::Path<i32>) -> impl Responder {
-    let Some(pool) = pool.get_ref() else {
+pub async fn get_project(pool: web::Data<PgPool>, id: web::Path<i32>) -> impl Responder {
+    let pool = pool.get_ref() else {
         return HttpResponse::ServiceUnavailable().body("DB no conectada");
     };
 
@@ -84,11 +84,11 @@ pub async fn get_project(pool: web::Data<Option<PgPool>>, id: web::Path<i32>) ->
 // Editar proyecto (Update)
 #[put("/api/projects/{id}")]
 pub async fn update_project(
-    pool: web::Data<Option<PgPool>>, 
+    pool: web::Option<PgPool>, 
     id: web::Path<i32>, 
     item: web::Json<Project>
 ) -> impl Responder {
-    let Some(pool) = pool.get_ref() else {
+    let pool = pool.get_ref() else {
         return HttpResponse::ServiceUnavailable().finish();
     };
 
