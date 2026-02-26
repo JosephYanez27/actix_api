@@ -20,7 +20,7 @@ pub async fn list_projects(pool: web::Data<Option<PgPool>>) -> impl Responder {
         return HttpResponse::ServiceUnavailable().body("DB no conectada");
     };
 
-    match sqlx::query_as::<_, Project>("SELECT id, name, tech FROM projects ORDER BY id DESC")
+    match sqlx::query_as::<_, Project>("SELECT  name, tech FROM projects ORDER BY id DESC")
         .fetch_all(pool)
         .await 
     {
