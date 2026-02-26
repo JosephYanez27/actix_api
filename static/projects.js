@@ -204,3 +204,12 @@ function updatePagination() {
     document.getElementById("btnNext").disabled = currentPage === totalPages;
     document.getElementById("btnLast").disabled = currentPage === totalPages;
 }
+
+
+window.goToPage = goToPage;
+window.filterProjects = filterProjects;
+window.prepareEdit = prepareEdit;
+window.deleteProject = deleteProject;
+window.saveProject = saveProject;
+window.resetConfigurator = resetConfigurator;
+window.checkForm = checkForm;
