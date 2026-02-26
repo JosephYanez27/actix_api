@@ -70,7 +70,7 @@ pub async fn get_project(pool: web::Data<Option<PgPool>>, id: web::Path<i32>) ->
         return HttpResponse::ServiceUnavailable().body("DB no conectada");
     };
 
-    match sqlx::query_as::<_, Project>("SELECT  name, tech FROM projects WHERE id = $1")
+    match sqlx::query_as::<_, Project>("SELECT id, name, tech FROM projects WHERE id = $1")
         .bind(id.into_inner())
         .fetch_optional(pool)
         .await 
