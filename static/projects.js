@@ -5,7 +5,6 @@ let currentPage = 1;
 const rowsPerPage = 5;
 
 /** * 1. FUNCIONES GLOBALES 
- * Deben estar fuera de cualquier bloque para que el HTML (oninput) las reconozca.
  */
 function checkForm() {
     const nameInput = document.getElementById('project-name-input');
@@ -14,7 +13,7 @@ function checkForm() {
 
     if (nameInput && saveBtn) {
         const nameValue = nameInput.value.trim();
-        // Habilitar si hay texto y 4 tecnologías seleccionadas
+        // Habilitar si hay texto y exactamente 4 tecnologías seleccionadas
         saveBtn.disabled = (selectedCount < 4 || nameValue === "");
     }
 }
@@ -33,7 +32,6 @@ function resetConfigurator() {
 document.addEventListener('DOMContentLoaded', () => {
     loadProjects();
 
-    // Manejo de clics en tecnologías (Delegación de eventos)
     document.addEventListener('click', (e) => {
         const option = e.target.closest('.option');
         if (option) {
@@ -41,21 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (categoryGroup) {
                 categoryGroup.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
                 option.classList.add('selected');
-                checkForm(); // Validar después de seleccionar
+                checkForm();
             }
         }
     });
-
-    const saveBtn = document.getElementById('send-stack-btn');
-    if (saveBtn) {
-        saveBtn.onclick = saveProject;
-    }
 });
 
 /**
- * 3. LÓGICA CRUD (CARGAR, GUARDAR, RENDERIZAR)
-/**
- * 3. LÓGICA CRUD (CARGAR, GUARDAR, RENDERIZAR)
+ * 3. LÓGICA CRUD
  */
 async function loadProjects() {
     try {
@@ -63,18 +54,13 @@ async function loadProjects() {
         if (!res.ok) throw new Error("Error en la red");
         
         allProjects = await res.json();
-        // IMPORTANTE: Al cargar, el filtro es igual a todos
         filteredProjects = [...allProjects]; 
-        
-        // Resetear a la página 1 al cargar datos nuevos
         currentPage = 1; 
         
         renderTable();
-        updatePagination(); // Asegúrate de llamar a ambos
+        updatePagination();
     } catch (e) { 
         console.error("Error cargando proyectos:", e);
-        const tbody = document.getElementById('projectsBody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error de conexión con el servidor</td></tr>';
     }
 }
 
@@ -83,10 +69,8 @@ function renderTable() {
     if (!tbody) return;
     tbody.innerHTML = '';
     
-    // Lógica de rebanado para paginación
     const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageItems = filteredProjects.slice(start, end);
+    const pageItems = filteredProjects.slice(start, start + rowsPerPage);
 
     if (pageItems.length === 0) {
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No se encontraron proyectos</td></tr>';
@@ -109,14 +93,10 @@ function renderTable() {
 
 function filterProjects() {
     const query = document.getElementById("projectSearch").value.toLowerCase().trim();
-
-    // Filtramos sobre el array original (allProjects)
     filteredProjects = allProjects.filter(p =>
-        p.name.toLowerCase().includes(query) || 
-        p.tech.toLowerCase().includes(query) // Opcional: buscar también por tecnología
+        p.name.toLowerCase().includes(query) || p.tech.toLowerCase().includes(query)
     );
-
-    currentPage = 1; // Siempre volver a la página 1 tras filtrar
+    currentPage = 1;
     renderTable();
     updatePagination();
 }
@@ -124,42 +104,31 @@ function filterProjects() {
 function updatePagination() {
     const totalPages = Math.ceil(filteredProjects.length / rowsPerPage) || 1;
     const indicator = document.getElementById("pageIndicator");
-    
-    if (indicator) {
-        indicator.innerText = `Página ${currentPage} de ${totalPages}`;
-    }
+    if (indicator) indicator.innerText = `Página ${currentPage} de ${totalPages}`;
 
-    // Manejo de estados de botones
-    const btnFirst = document.getElementById("btnFirst");
-    const btnPrev = document.getElementById("btnPrev");
-    const btnNext = document.getElementById("btnNext");
-    const btnLast = document.getElementById("btnLast");
-
-    if (btnFirst) btnFirst.disabled = (currentPage === 1);
-    if (btnPrev) btnPrev.disabled = (currentPage === 1);
-    if (btnNext) btnNext.disabled = (currentPage === totalPages || totalPages === 0);
-    if (btnLast) btnLast.disabled = (currentPage === totalPages || totalPages === 0);
+    document.getElementById("btnPrev")?.toggleAttribute("disabled", currentPage === 1);
+    document.getElementById("btnFirst")?.toggleAttribute("disabled", currentPage === 1);
+    document.getElementById("btnNext")?.toggleAttribute("disabled", currentPage === totalPages);
+    document.getElementById("btnLast")?.toggleAttribute("disabled", currentPage === totalPages);
 }
 
-async function saveProject(event) {
-    if (event) event.preventDefault();
+function goToPage(type) {
+    const totalPages = Math.ceil(filteredProjects.length / rowsPerPage);
+    if (type === "first") currentPage = 1;
+    if (type === "prev" && currentPage > 1) currentPage--;
+    if (type === "next" && currentPage < totalPages) currentPage++;
+    if (type === "last") currentPage = totalPages;
 
+    renderTable();
+    updatePagination();
+}
+
+async function saveProject() {
     const id = document.getElementById('projectId').value;
     const nameInput = document.getElementById('project-name-input').value.trim();
-    
-    // Sanitización para evitar errores de Regex y SQL
     const sanitizedName = nameInput.replace(/['";\-\-]/g, "");
 
     if (!sanitizedName) return;
-
-    const isDuplicate = allProjects.some(p => 
-        p.name.toLowerCase() === sanitizedName.toLowerCase() && p.id != id
-    );
-
-    if (isDuplicate) {
-        alert(`El nombre "${sanitizedName}" ya está en uso.`);
-        return;
-    }
 
     const selectedTechs = Array.from(document.querySelectorAll('.option.selected'))
                                .map(opt => opt.getAttribute('data-name'))
@@ -177,7 +146,6 @@ async function saveProject(event) {
         });
 
         if (response.ok) {
-            alert(id ? "✅ Actualizado" : "✅ Creado");
             resetConfigurator();
             await loadProjects();
         }
@@ -186,12 +154,9 @@ async function saveProject(event) {
     }
 }
 
-
-
 function prepareEdit(id, name, tech) {
     document.getElementById('projectId').value = id;
     document.getElementById('project-name-input').value = name;
-    
     document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
     
     const techsArray = tech.split(',').map(t => t.trim());
@@ -202,7 +167,6 @@ function prepareEdit(id, name, tech) {
 
     document.getElementById('send-stack-btn').innerText = "Actualizar Proyecto";
     checkForm();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function deleteProject(id) {
@@ -212,27 +176,11 @@ async function deleteProject(id) {
     }
 }
 
-
-
-
-function goToPage(type) {
-    const totalPages = Math.ceil(filteredProjects.length / rowsPerPage);
-
-    if (type === "first") currentPage = 1;
-    if (type === "prev" && currentPage > 1) currentPage--;
-    if (type === "next" && currentPage < totalPages) currentPage++;
-    if (type === "last") currentPage = totalPages;
-
-    renderTable();
-    updatePagination();
-}
-
-
-
+// ASIGNACIÓN AL WINDOW (Para que el HTML las vea)
 window.goToPage = goToPage;
 window.filterProjects = filterProjects;
 window.prepareEdit = prepareEdit;
 window.deleteProject = deleteProject;
 window.saveProject = saveProject;
-window.resetConfigurator = resetConfigurator;
 window.checkForm = checkForm;
+window.resetConfigurator = resetConfigurator;
