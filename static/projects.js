@@ -4,50 +4,7 @@ let filteredProjects = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 
-/** * 1. FUNCIONES GLOBALES 
- */
-function checkForm() {
-    const nameInput = document.getElementById('project-name-input');
-    const saveBtn = document.getElementById('send-stack-btn');
-    const selectedCount = document.querySelectorAll('.option.selected').length;
-
-    if (nameInput && saveBtn) {
-        const nameValue = nameInput.value.trim();
-        // Habilitar si hay texto y exactamente 4 tecnologías seleccionadas
-        saveBtn.disabled = (selectedCount < 4 || nameValue === "");
-    }
-}
-
-function resetConfigurator() {
-    document.getElementById('projectId').value = "";
-    document.getElementById('project-name-input').value = "";
-    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-    document.getElementById('send-stack-btn').innerText = "Guardar Configuración";
-    checkForm();
-}
-
-/**
- * 2. INICIALIZACIÓN DE EVENTOS
- */
-document.addEventListener('DOMContentLoaded', () => {
-    loadProjects();
-
-    document.addEventListener('click', (e) => {
-        const option = e.target.closest('.option');
-        if (option) {
-            const categoryGroup = option.closest('.category-group');
-            if (categoryGroup) {
-                categoryGroup.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-                option.classList.add('selected');
-                checkForm();
-            }
-        }
-    });
-});
-
-/**
- * 3. LÓGICA CRUD
- */
+/** 1. LÓGICA DE CARGA Y RENDERIZADO **/
 async function loadProjects() {
     try {
         const res = await fetch(API_URL);
@@ -91,6 +48,7 @@ function renderTable() {
     });
 }
 
+/** 2. FILTRO Y PAGINACIÓN **/
 function filterProjects() {
     const query = document.getElementById("projectSearch").value.toLowerCase().trim();
     filteredProjects = allProjects.filter(p =>
@@ -108,19 +66,31 @@ function updatePagination() {
 
     document.getElementById("btnPrev")?.toggleAttribute("disabled", currentPage === 1);
     document.getElementById("btnFirst")?.toggleAttribute("disabled", currentPage === 1);
-    document.getElementById("btnNext")?.toggleAttribute("disabled", currentPage === totalPages);
-    document.getElementById("btnLast")?.toggleAttribute("disabled", currentPage === totalPages);
+    document.getElementById("btnNext")?.toggleAttribute("disabled", currentPage === totalPages || totalPages === 0);
+    document.getElementById("btnLast")?.toggleAttribute("disabled", currentPage === totalPages || totalPages === 0);
 }
 
 function goToPage(type) {
     const totalPages = Math.ceil(filteredProjects.length / rowsPerPage);
     if (type === "first") currentPage = 1;
-    if (type === "prev" && currentPage > 1) currentPage--;
-    if (type === "next" && currentPage < totalPages) currentPage++;
-    if (type === "last") currentPage = totalPages;
+    else if (type === "prev" && currentPage > 1) currentPage--;
+    else if (type === "next" && currentPage < totalPages) currentPage++;
+    else if (type === "last") currentPage = totalPages;
 
     renderTable();
     updatePagination();
+}
+
+/** 3. FORMULARIO Y CRUD **/
+function checkForm() {
+    const nameInput = document.getElementById('project-name-input');
+    const saveBtn = document.getElementById('send-stack-btn');
+    const selectedCount = document.querySelectorAll('.option.selected').length;
+
+    if (nameInput && saveBtn) {
+        const nameValue = nameInput.value.trim();
+        saveBtn.disabled = (selectedCount < 4 || nameValue === "");
+    }
 }
 
 async function saveProject() {
@@ -167,16 +137,25 @@ function prepareEdit(id, name, tech) {
 
     document.getElementById('send-stack-btn').innerText = "Actualizar Proyecto";
     checkForm();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function deleteProject(id) {
     if (confirm('¿Eliminar proyecto?')) {
         const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        if (res.ok) loadProjects();
+        if (res.ok) await loadProjects();
     }
 }
 
-// ASIGNACIÓN AL WINDOW (Para que el HTML las vea)
+function resetConfigurator() {
+    document.getElementById('projectId').value = "";
+    document.getElementById('project-name-input').value = "";
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('send-stack-btn').innerText = "Guardar Configuración";
+    checkForm();
+}
+
+// ASIGNACIÓN AL OBJETO WINDOW PARA ACCESO DESDE HTML
 window.goToPage = goToPage;
 window.filterProjects = filterProjects;
 window.prepareEdit = prepareEdit;
@@ -184,3 +163,5 @@ window.deleteProject = deleteProject;
 window.saveProject = saveProject;
 window.checkForm = checkForm;
 window.resetConfigurator = resetConfigurator;
+
+document.addEventListener('DOMContentLoaded', loadProjects);
