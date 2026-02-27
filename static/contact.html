@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto | Solid Software</title>
+    <title>Solid Software</title>
 
     <link rel="icon" type="image/png" sizes="32x32" href="images/cub_blan.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/cub_blan.png">
+    
     <link rel="apple-touch-icon" href="images/cub_blan.png">
 
     <link rel="stylesheet" href="styles.css">
 
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -36,96 +37,94 @@
   <span>Contacto</span>
 </nav>
 
+
+
 <section id="contact" class="section active">
-    <h2>Contacto</h2>
 
-    <form id="myForm" novalidate>
-        <input type="hidden" id="contactId" name="contactId" value="">
+<h2>Contacto</h2>
 
-        <div class="field">
-            <input type="text" name="nombre" id="nombre" placeholder="Nombre" maxlength="25" required>
-            <small>Solo letras (3-25 caracteres)</small>
-        </div>
+<form id="myForm" novalidate>
 
-        <div class="field">
-            <input type="email" name="correo" id="correo" placeholder="Correo" required>
-            <small>Formato válido: ejemplo@mail.com</small>
-        </div>
+  <div class="field">
+    <input type="text" name="nombre" placeholder="Nombre" maxlength="25" required>
+    <small>Solo letras mínimo 3-maximo 25</small>
+  </div>
 
-        <div class="field">
-            <input type="tel" name="telefono" id="telefono" placeholder="Teléfono" maxlength="10" required>
-            <small>10 dígitos numéricos</small>
-        </div>
+  <div class="field">
+    <input type="email" name="correo" placeholder="Correo" required>
+    <small>Formato válido: ejemplo@mail.com</small>
+  </div>
 
-        <div class="field">
-            <textarea 
-                name="mensaje" 
-                id="mensaje"
-                placeholder="Escribe tu mensaje..."
-                required
-                minlength="10"
-                maxlength="300"
-            ></textarea>
-            <small id="msgHelp">10 a 300 caracteres.</small>
-        </div>
+  <div class="field">
+    <input type="tel" name="telefono" placeholder="Teléfono" maxlength="10" required>
+    <small>10 números</small>
+  </div>
 
-        <div class="g-recaptcha" data-sitekey="6LdLfm8sAAAAALAmDsmhIBQ9sT6758MrIZ7Fm4eA"></div>
+<div class="field">
+  <textarea 
+    name="mensaje" 
+    id="mensaje"
+    placeholder="Escribe tu mensaje..."
+    required
+    minlength="10"
+    maxlength="300"
+  ></textarea>
 
-        <button type="submit" id="submitBtn">Enviar</button>
-        <p id="msg"></p>
-    </form>
+  <small id="msgHelp">10 a 300 caracteres.</small>
+</div>
 
-    <hr style="margin: 50px 0; border: 0; border-top: 1px solid #ddd;">
+  <div class="g-recaptcha" data-sitekey="6LdLfm8sAAAAALAmDsmhIBQ9sT6758MrIZ7Fm4eA"></div>
 
-    <div class="admin-section">
-        <h3>Mensajes Recibidos</h3>
-        
-        <div class="search-container" style="margin-bottom: 20px;">
-            <input type="text" id="contactSearch" placeholder="🔍 Buscar contacto..." onkeyup="filterData('contact')" 
-                   style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-        </div>
+  <button type="submit">Enviar</button>
+  <p id="msg"></p>
+</form>
 
-        <div class="table-wrapper" style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; background: #fff;">
-                <thead style="background: #333; color: #fff;">
-                    <tr>
-                        <th style="padding: 10px; text-align: left;">Nombre</th>
-                        <th style="padding: 10px; text-align: left;">Correo</th>
-                        <th style="padding: 10px; text-align: left;">Mensaje</th>
-                        <th style="padding: 10px; text-align: center;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="contactsBody">
-                    <tr>
-                        <td colspan="4" style="text-align: center; padding: 20px;">Cargando mensajes...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="pagination-box" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px;">
-            <button onclick="goToPage('prev', 'contact')" id="btnContactPrev">Anterior</button>
-            <span id="contactPageIndicator">Página 1 de 1</span>
-            <button onclick="goToPage('next', 'contact')" id="btnContactNext">Siguiente</button>
-        </div>
-    </div>
 </section>
 
 <script src="captcha.js"></script>
+<script src="validation.js"></script>
+<script src="breadcrumbs.js"></script>
+
 <script>
-    // Lógica para la navegación del menú hamburguesa
-    const menuContainer = document.querySelector(".menu-container");
-    const menu = document.querySelector(".menu-links");
-    const toggle = document.createElement("div");
-    toggle.classList.add("menu-toggle");
-    toggle.innerHTML = "<span></span><span></span><span></span>";
-    menuContainer.appendChild(toggle);
+function showSection(id) {
 
-    toggle.addEventListener("click", () => {
-        menu.classList.toggle("active");
-        toggle.classList.toggle("active");
-    });
+  document.querySelectorAll(".section")
+    .forEach(s => s.classList.remove("active"));
+
+  const section = document.getElementById(id);
+
+  if (!section) return;
+
+  section.classList.add("active");
+
+  // 🧭 actualizar breadcrumb
+  updateBreadcrumb(id);
+}
 </script>
+<script>
+function showSection(id) {
+  document.querySelectorAll(".section")
+    .forEach(s => s.classList.remove("active"));
 
+  document.getElementById(id).classList.add("active");
+}
+</script>
+<script>
+const menuContainer = document.querySelector(".menu-container");
+const menu = document.querySelector(".menu-links");
+
+// Crear botón hamburguesa dinámicamente
+const toggle = document.createElement("div");
+toggle.classList.add("menu-toggle");
+toggle.innerHTML = "<span></span><span></span><span></span>";
+
+menuContainer.appendChild(toggle);
+
+// Evento
+toggle.addEventListener("click", () => {
+  menu.classList.toggle("active");
+  toggle.classList.toggle("active");
+});
+</script>
 </body>
 </html>

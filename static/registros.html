@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solid Software</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="images/cub_blan.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/cub_blan.png">
+    
+    <link rel="apple-touch-icon" href="images/cub_blan.png">
+
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.46/build/spline-viewer.js"></script>
+</head>
+<style>
+    .pagination button:hover { background: #f0f0f0; }
+
+/* MODAL (Ventana Emergente) */
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content label {
+    display: block;
+    margin-top: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #7f8c8d;
+}
+
+.modal-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn-cancel {
+    background: #ecf0f1;
+    color: #333;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-update {
+    background: #3498db;
+    margin-top: 0; /* reset */
+}
+</style>
+
+<body>
+<nav class="menu">
+  <div class="menu-container">
+    <div class="logo-box">
+      <img src="images/sl.png" alt="Solid Software">
+    </div>
+
+    <ul class="menu-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="services.html">Servicios</a></li>
+      <li><a href="about.html">Nosotros</a></li>
+      <li><a href="contact.html">Contacto</a></li>
+       <li><a href="registros.html">Registros</a></li>
+    </ul>
+  </div>
+</nav>
+<nav class="breadcrumbs">
+  <a href="index.html">Inicio</a>
+  <span>›</span>
+  <span>Registros</span>
+</nav>
+<div class="admin-panel">
+    <div class="card add-form">
+        <h3>Nuevo Registro Independiente</h3>
+        <div class="form-grid">
+            <input type="text" id="add-nombre" placeholder="Nombre del proyecto/registro">
+            <textarea id="add-mensaje" placeholder="Mensaje o detalles..."></textarea>
+            <div class="date-group">
+                <label>Inicio: <input type="date" id="add-inicio"></label>
+                <label>Conclusión: <input type="date" id="add-conclusion"></label>
+            </div>
+        </div>
+        <button class="btn-save" onclick="crearRegistro()">💾 Guardar Registro</button>
+    </div>
+
+    <div class="card table-container">
+        <input type="text" id="searchInput" placeholder="🔍 Filtrar por nombre..." onkeyup="filtrar()">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Inicio</th>
+                    <th>Conclusión</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+        <div class="pagination">
+            <button onclick="changePage(-1)">Anterior</button>
+            <span id="pageInfo">Página 1</span>
+            <button onclick="changePage(1)">Siguiente</button>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Editar Registro</h3>
+        <input type="hidden" id="edit-id">
+        <label>Nombre:</label> <input type="text" id="edit-nombre">
+        <label>Mensaje:</label> <textarea id="edit-mensaje"></textarea>
+        <label>Fecha Inicio:</label> <input type="date" id="edit-inicio">
+        <label>Fecha Conclusión:</label> <input type="date" id="edit-conclusion">
+        <div class="modal-btns">
+            <button class="btn-update" onclick="actualizarRegistro()">Actualizar</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+<script src="registros.js"></script>
+</body>
+</html>
