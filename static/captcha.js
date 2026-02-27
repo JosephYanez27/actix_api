@@ -1,129 +1,120 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("myForm");
+    const msg = document.getElementById("msg");
+    const mensaje = document.getElementById("mensaje");
+    const help = document.getElementById("msgHelp");
+    
+    // Campo oculto para el ID (asegúrate de tener <input type="hidden" id="contactId"> en tu HTML)
+    const contactIdInput = document.getElementById("contactId");
 
-  const form = document.getElementById("myForm");
-  const msg = document.getElementById("msg");
+    // ❌ NO números en nombre
+    form.nombre.addEventListener("input", () => {
+        form.nombre.value = form.nombre.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    });
 
-  const mensaje = document.getElementById("mensaje");
-  const help = document.getElementById("msgHelp");
+    // ❌ NO letras en teléfono
+    form.telefono.addEventListener("input", () => {
+        form.telefono.value = form.telefono.value.replace(/\D/g, "");
+    });
 
-  // ❌ NO números en nombre
-  form.nombre.addEventListener("input", () => {
-    form.nombre.value = form.nombre.value.replace(
-      /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
-      ""
-    );
-  });
+    // 🔒 Seguridad: Caracteres y palabras prohibidas
+    const forbiddenChars = /['";]|--|(\/\*)|(\*\/)/g;
+    const sqlWords = /(select|insert|update|delete|drop|truncate|alter|or\s+1=1)/i;
 
-  // ❌ NO letras en teléfono
-  form.telefono.addEventListener("input", () => {
-    form.telefono.value = form.telefono.value.replace(/\D/g, "");
-  });
+    mensaje.addEventListener("input", () => {
+        mensaje.value = mensaje.value.replace(forbiddenChars, "");
+        const text = mensaje.value;
+        const len = text.length;
 
-  // 🔒 Caracteres peligrosos
-  const forbiddenChars = /['";]|--|(\/\*)|(\*\/)/g;
+        if (sqlWords.test(text)) {
+            help.textContent = "❌ Texto no permitido Moreno";
+            help.style.color = "#f87171";
+            return;
+        }
 
-  // 🚫 Palabras SQL sospechosas
-  const sqlWords = /(select|insert|update|delete|drop|truncate|alter|or\s+1=1)/i;
+        if (len < 10) {
+            help.textContent = "❗ Mínimo 10 caracteres";
+            help.style.color = "#f87171";
+        } else if (len > 300) {
+            help.textContent = "❗ Máximo 300 caracteres";
+            help.style.color = "#f87171";
+        } else {
+            help.textContent = "✔ Mensaje válido";
+            help.style.color = "#4ade80";
+        }
+    });
 
-  mensaje.addEventListener("input", () => {
+    // 📤 Envío formulario (POST o PUT)
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.innerText = "";
 
-    // eliminar símbolos peligrosos
-    mensaje.value = mensaje.value.replace(forbiddenChars, "");
+        const contactId = contactIdInput ? contactIdInput.value : "";
+        let token = "";
 
-    const text = mensaje.value;
-    const len = text.length;
+        // Solo validamos reCAPTCHA si es un envío NUEVO (opcional, según tu preferencia)
+        if (!contactId) {
+            token = grecaptcha.getResponse();
+            if (!token) {
+                msg.innerText = "❌ Completa el captcha";
+                return;
+            }
+        }
 
-    // detectar palabras SQL
-    if (sqlWords.test(text)) {
-      help.textContent = "❌ Texto no permitido Moreno";
-      help.style.color = "#f87171";
-      return;
-    }
+        const data = {
+            nombre: form.nombre.value.trim(),
+            correo: form.correo.value.trim(),
+            telefono: form.telefono.value.trim(),
+            mensaje: mensaje.value.trim(),
+            recaptcha_token: token || "manual_edit"
+        };
 
-    if (len < 10) {
-      help.textContent = "❗ Mínimo 10 caracteres";
-      help.style.color = "#f87171";
-    }
-    else if (len > 300) {
-      help.textContent = "❗ Máximo 300 caracteres";
-      help.style.color = "#f87171";
-    }
-    else {
-      help.textContent = "✔ Mensaje válido";
-      help.style.color = "#4ade80";
-    }
-  });
+        // 🧪 Validaciones finales
+        if (!data.nombre || !data.correo || !data.telefono || !data.mensaje) {
+            msg.innerText = "❌ Completa todos los campos";
+            return;
+        }
 
-  // 📤 Envío formulario
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg.innerText = "";
+        if (data.telefono.length !== 10) {
+            msg.innerText = "❌ El teléfono debe tener 10 dígitos";
+            return;
+        }
 
-    // 🔐 reCAPTCHA
-    const token = grecaptcha.getResponse();
+        // Determinamos URL y Método
+        const url = contactId ? `/api/contacts/${contactId}` : "/contact";
+        const method = contactId ? "PUT" : "POST";
 
-    if (!token) {
-      msg.innerText = "❌ Completa el captcha";
-      return;
-    }
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
 
-    const data = {
-      nombre: form.nombre.value.trim(),
-      correo: form.correo.value.trim(),
-      telefono: form.telefono.value.trim(),
-      mensaje: mensaje.value.trim(),
-      recaptcha_token: token
-    };
+            if (!res.ok) throw new Error("Error en respuesta");
 
-    // 🧪 Validaciones finales
-    if (!data.nombre || !data.correo || !data.telefono || !data.mensaje) {
-      msg.innerText = "❌ Completa todos los campos";
-      return;
-    }
+            // Si es PUT (editar), el backend devuelve texto. Si es POST, devuelve un bool.
+            if (method === "PUT") {
+                msg.innerText = "✅ Contacto actualizado con éxito";
+                setTimeout(() => location.reload(), 1500); // Recarga para ver cambios
+            } else {
+                const ok = await res.json();
+                if (ok === true) {
+                    msg.innerText = "✅ Mensaje enviado correctamente";
+                    form.reset();
+                    help.textContent = "10 a 300 caracteres";
+                    help.style.color = "#9ca3af";
+                    grecaptcha.reset();
+                } else {
+                    msg.innerText = "❌ Error al enviar";
+                    grecaptcha.reset();
+                }
+            }
 
-    if (data.telefono.length !== 10) {
-      msg.innerText = "❌ El teléfono debe tener 10 dígitos";
-      return;
-    }
-
-    if (data.mensaje.length < 10 || data.mensaje.length > 300) {
-      msg.innerText = "❌ El mensaje no cumple longitud";
-      return;
-    }
-
-    if (sqlWords.test(data.mensaje)) {
-      msg.innerText = "❌ Mensaje inválido";
-      return;
-    }
-
-    try {
-
-      const res = await fetch("/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      if (!res.ok) throw new Error();
-
-      const ok = await res.json();
-
-      if (ok === true) {
-        msg.innerText = "✅ Mensaje enviado correctamente";
-        form.reset();
-        help.textContent = "10 a 300 caracteres";
-        help.style.color = "#9ca3af";
-        grecaptcha.reset();
-      } 
-      else {
-        msg.innerText = "❌ Error al enviar";
-        grecaptcha.reset();
-      }
-
-    } catch {
-      msg.innerText = "❌ Error del servidor";
-      grecaptcha.reset();
-    }
-  });
-
+        } catch (error) {
+            console.error(error);
+            msg.innerText = "❌ Error del servidor";
+            if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
+        }
+    });
 });
