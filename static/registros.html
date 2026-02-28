@@ -63,11 +63,15 @@
             </table>
         </div>
 
-        <div class="pagination">
-            <button onclick="changePage(-1)">« Ant.</button>
-            <span id="pageInfo">Página 1</span>
-            <button onclick="changePage(1)">Sig. »</button>
-        </div>
+       <div class="pagination">
+    <button onclick="goToStart()">⏮ Inicio</button>
+    <button onclick="changePage(-1)">« Ant.</button>
+
+    <span id="pageInfo">Página 1</span>
+
+    <button onclick="changePage(1)">Sig. »</button>
+    <button onclick="goToEnd()">Final ⏭</button>
+</div>
     </section>
 
 </div>
@@ -98,10 +102,7 @@
 </div>
 
 
-    <div class="input-group">
-      <label>Teléfono</label>
-      <input type="text" id="edit-telefono">
-    </div>
+    
 
  <div class="input-group">
   <label for="edit-mensaje">Mensaje</label>

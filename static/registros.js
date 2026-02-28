@@ -75,6 +75,16 @@ function changePage(direction) {
 
     renderTable();
 }
+function goToStart() {
+    currentPage = 1;
+    renderTable();
+}
+
+function goToEnd() {
+    const totalPages = Math.ceil(filtered.length / rowsPerPage);
+    currentPage = totalPages > 0 ? totalPages : 1;
+    renderTable();
+}
 
 function filtrar() {
     const text = document
