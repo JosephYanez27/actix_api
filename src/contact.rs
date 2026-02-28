@@ -1,6 +1,6 @@
-use actix_web::{post, web, HttpRequest, HttpResponse};
-use serde::Deserialize;
-use sqlx::PgPool;
+use actix_web::{get, post, put, delete, web, HttpResponse};
+use serde::{Serialize, Deserialize};
+use sqlx::FromRow;
 
 #[derive(Deserialize)]
 pub struct ContactInput {
