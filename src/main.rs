@@ -100,12 +100,7 @@ async fn main() -> std::io::Result<()> {
                     .index_file("index.html")
             )
 
-            // 🔹 PANTALLA DE ERROR (SE MANTIENE)
-            .default_service(web::route().to(|| async {
-                HttpResponse::Found()
-                    .append_header(("Location", "/error.html"))
-                    .finish()
-            }))
+      
     })
     .bind(("0.0.0.0", port))?
     .run()
