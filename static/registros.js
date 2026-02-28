@@ -1,113 +1,192 @@
-let rawData = [];
-let filteredData = [];
+let contacts = [];
+let filtered = [];
 let currentPage = 1;
-const perPage = 5;
+const rowsPerPage = 5;
 
-document.addEventListener("DOMContentLoaded", fetchItems);
+document.addEventListener("DOMContentLoaded", loadContacts);
 
-async function fetchItems() {
-    const res = await fetch('/api/registros');
-    rawData = await res.json();
-    filtrar();
+async function loadContacts() {
+    try {
+        const res = await fetch("/api/contacts");
+
+        if (!res.ok) {
+            throw new Error("Error cargando contactos");
+        }
+
+        contacts = await res.json();
+        filtered = contacts;
+        currentPage = 1;
+        renderTable();
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al cargar contactos");
+    }
+}
+
+function renderTable() {
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;">
+                    No hay resultados
+                </td>
+            </tr>
+        `;
+        document.getElementById("pageInfo").innerText = "Página 0 de 0";
+        return;
+    }
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageItems = filtered.slice(start, end);
+
+    pageItems.forEach(c => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${c.nombre}</td>
+                <td>${c.correo}</td>
+                <td>${c.telefono}</td>
+                <td>${c.mensaje.length > 40 ? c.mensaje.substring(0, 40) + "..." : c.mensaje}</td>
+                <td>
+                    <button onclick="openEdit(${c.id})">✏️</button>
+                    <button onclick="deleteContacto(${c.id})">🗑️</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    const totalPages = Math.ceil(filtered.length / rowsPerPage);
+
+    document.getElementById("pageInfo").innerText =
+        `Página ${currentPage} de ${totalPages}`;
+}
+
+function changePage(direction) {
+    const totalPages = Math.ceil(filtered.length / rowsPerPage);
+
+    currentPage += direction;
+
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    renderTable();
 }
 
 function filtrar() {
-    const q = document.getElementById("searchInput").value.toLowerCase();
-    filteredData = rawData.filter(item => item.nombre.toLowerCase().includes(q));
+    const text = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    filtered = contacts.filter(c =>
+        c.nombre.toLowerCase().startsWith(text) ||
+        c.correo.toLowerCase().startsWith(text)
+    );
+
     currentPage = 1;
-    render();
+    renderTable();
 }
 
-function render() {
-    const start = (currentPage - 1) * perPage;
-    const end = start + perPage;
-    const pageItems = filteredData.slice(start, end);
+async function deleteContacto(id) {
+    if (!confirm("¿Eliminar contacto?")) return;
 
-    const tbody = document.getElementById("tbody");
-    tbody.innerHTML = pageItems.map(i => `
-        <tr>
-            <td><strong>${i.nombre}</strong></td>
-            <td>${i.fecha_inicio}</td>
-            <td>${i.fecha_conclusion}</td>
-            <td>
-                <button onclick="openModal(${i.id})">✏️</button>
-                <button onclick="deleteItem(${i.id})">🗑️</button>
-            </td>
-        </tr>
-    `).join('');
-    
-    const totalPages = Math.ceil(filteredData.length / perPage) || 1;
-    document.getElementById("pageInfo").innerText = `Página ${currentPage} de ${totalPages}`;
+    try {
+        const res = await fetch(`/api/contacts/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            throw new Error("Error eliminando");
+        }
+
+        await loadContacts();
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al eliminar contacto");
+    }
 }
 
-async function crearRegistro() {
-    const payload = {
-        nombre: document.getElementById("add-nombre").value,
-        mensaje: document.getElementById("add-mensaje").value,
-        fecha_inicio: document.getElementById("add-inicio").value,
-        fecha_conclusion: document.getElementById("add-conclusion").value
-    };
+async function openEdit(id) {
+    try {
+        const res = await fetch(`/api/contacts/${id}`);
 
-    if(!payload.nombre || !payload.fecha_inicio || !payload.fecha_conclusion) return alert("Faltan datos");
+        if (!res.ok) {
+            throw new Error("No se pudo obtener el contacto");
+        }
 
-    await fetch('/api/registros', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-    });
-    fetchItems();
-    resetAddForm();
-}
+        const c = await res.json();
 
-// MODAL LOGIC
-function openModal(id) {
-    const item = rawData.find(r => r.id === id);
-    document.getElementById("edit-id").value = item.id;
-    document.getElementById("edit-nombre").value = item.nombre;
-    document.getElementById("edit-mensaje").value = item.mensaje || "";
-    document.getElementById("edit-inicio").value = item.fecha_inicio;
-    document.getElementById("edit-conclusion").value = item.fecha_conclusion;
-    document.getElementById("editModal").style.display = "flex";
+        document.getElementById("edit-id").value = c.id;
+        document.getElementById("edit-nombre").value = c.nombre;
+        document.getElementById("edit-correo").value = c.correo;
+        document.getElementById("edit-telefono").value = c.telefono;
+        document.getElementById("edit-mensaje").value = c.mensaje;
+
+        document.getElementById("editModal").style.display = "flex";
+
+        if (typeof grecaptcha !== "undefined") {
+            grecaptcha.reset();
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al abrir edición");
+    }
 }
 
 function closeModal() {
     document.getElementById("editModal").style.display = "none";
 }
 
-async function actualizarRegistro() {
+async function actualizarContacto() {
     const id = document.getElementById("edit-id").value;
-    const payload = {
+
+    const token = typeof grecaptcha !== "undefined"
+        ? grecaptcha.getResponse()
+        : "";
+
+    if (!token) {
+        alert("Completa el reCAPTCHA");
+        return;
+    }
+
+    const data = {
         nombre: document.getElementById("edit-nombre").value,
+        correo: document.getElementById("edit-correo").value,
+        telefono: document.getElementById("edit-telefono").value,
         mensaje: document.getElementById("edit-mensaje").value,
-        fecha_inicio: document.getElementById("edit-inicio").value,
-        fecha_conclusion: document.getElementById("edit-conclusion").value
+        recaptcha_token: token
     };
 
-    await fetch(`/api/registros/${id}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-    });
-    closeModal();
-    fetchItems();
-}
+    try {
+        const res = await fetch(`/api/contacts/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
 
-async function deleteItem(id) {
-    if(confirm("¿Seguro que deseas eliminar?")) {
-        await fetch(`/api/registros/${id}`, { method: 'DELETE' });
-        fetchItems();
+        if (!res.ok) {
+            throw new Error("Error actualizando");
+        }
+
+        closeModal();
+
+        if (typeof grecaptcha !== "undefined") {
+            grecaptcha.reset();
+        }
+
+        await loadContacts();
+
+        alert("Contacto actualizado correctamente");
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al actualizar contacto");
     }
-}
-
-function changePage(dir) {
-    const total = Math.ceil(filteredData.length / perPage);
-    const next = currentPage + dir;
-    if(next >= 1 && next <= total) {
-        currentPage = next;
-        render();
-    }
-}
-
-function resetAddForm() {
-    ["add-nombre", "add-mensaje", "add-inicio", "add-conclusion"].forEach(id => document.getElementById(id).value = "");
 }
