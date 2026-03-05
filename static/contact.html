@@ -11,6 +11,46 @@
     <link rel="apple-touch-icon" href="images/cub_blan.png">
 
     <link rel="stylesheet" href="styles.css">
+    <style>
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+button, .btn-cancel {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+/* Botón Guardar */
+.btn-save {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.btn-save:hover {
+  background: #218838;
+}
+
+/* Botón Cancelar */
+.btn-cancel {
+  background: #dc3545;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancel:hover {
+  background: #c82333;
+}
+</style>
 
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
@@ -61,22 +101,25 @@
     <small>10 números</small>
   </div>
 
-<div class="field">
-  <textarea 
-    name="mensaje" 
-    id="mensaje"
-    placeholder="Escribe tu mensaje..."
-    required
-    minlength="10"
-    maxlength="300"
-  ></textarea>
-
-  <small id="msgHelp">10 a 300 caracteres.</small>
-</div>
+  <div class="field">
+    <textarea 
+      name="mensaje" 
+      id="mensaje"
+      placeholder="Escribe tu mensaje..."
+      required
+      minlength="10"
+      maxlength="300"
+    ></textarea>
+    <small id="msgHelp">10 a 300 caracteres.</small>
+  </div>
 
   <div class="g-recaptcha" data-sitekey="6LdLfm8sAAAAALAmDsmhIBQ9sT6758MrIZ7Fm4eA"></div>
 
-  <button type="submit">Enviar</button>
+  <div class="btn-group">
+    <button type="submit" class="btn-save">Guardar</button>
+    <a href="registros.html" class="btn-cancel">Cancelar</a>
+  </div>
+
   <p id="msg"></p>
 </form>
 
